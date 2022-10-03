@@ -1,0 +1,44 @@
+#+TITLE: APLIC Documentation
+#+AUTHOR: Francisco Marques
+#+EMAIL: fmarques_00@protonmail.com
+#+STARTUP: show2levels
+
+* Table of Content :TOC:
+- [[#register-map][Register Map]]
+  - [[#overview][Overview]]
+  - [[#arguments][Arguments]]
+  - [[#usage][Usage]]
+
+* Register Map
+** Overview
+The APLIC register map is implemented using the python script *regmap-autogenerate.py* made in ETH Zurich and University of Bologna (Copyright 2019 ETH Zurich and University of Bologna. SPDX-License-Identifier: Apache-2.0).
+This script was edited to meet the AIA APLIC specification. In addition, new arguments were introduced to make the APLIC register map generation more modular and adaptable to different projects.
+** Arguments
+*regmap-autogenerate.py* has the following arguments:
+
+|-------------------+-----------+----------------------------------------------------------------------------------|
+| Argument          | Default   | Description                                                                      |
+|-------------------+-----------+----------------------------------------------------------------------------------|
+| -h/--help         | ****      | show help message                                                                |
+| -d/--domain_level | M         | Domain level type: M-Level or S-Level <M, S>                                     |
+| -I/--id           | ****      | Domain ID used to create the file name: aplic_<d>_<ID>_regmap.sv <int>           |
+| -a/--addr         | 0xC000000 | Domain base address <hex>                                                        |
+| -i/--nr_idc       | 2         | Number of domain's IDCs <int>                                                    |
+| -s/--nr_sources   | 30        | Number of domain's sources <int>                                                 |
+| -p/--min_prio     | 7         | Minimum priority number (Maximum number) <int>                                   |
+| -y/--s_domain     | y         | Indicates if a S-Level domain will be implemented. Irrelevant for M-Level <y, n> |
+|-------------------+-----------+----------------------------------------------------------------------------------|
+
++ *Why an ID?*: It may exist more than one APLIC domain with the same privilege. Thus, it is necessary an unique why to differenciate between them. If a given implementation only will have one domain per priv. level, then the -I argument may not be used, and the file name as the format: aplic_<d>_regmap.sv
+** Usage
+To create a M-Level domain, with base address at 0xC000000, with 4 IDCs, 31 sources, 6 as minimum priority and it will be implemented an S-Domain, the command line is:
+
+#+begin_src bash
+python regmap-autogenerate.py -d M -a 0xC000000 -i 4 -s 31 -p 6 -y y
+#+end_src
+
+To create a L-Level domain, with base address at 0xD000000, with 4 IDCs, 31 sources, 6 as minimum priority and ID equal to 1, the command line is:
+
+#+begin_src bash
+python regmap-autogenerate.py -d M -a 0xD000000 -i 4 -s 31 -p 6 -I 1
+#+end_src
