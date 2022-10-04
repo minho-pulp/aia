@@ -20,7 +20,7 @@ REGISTER_DEF_SIZE64 = 63
 SOURCECFG_SIZE      = 11
 IDELIVERY_SIZE      = 1
 IFORCE_SIZE         = 1
-TOPI_SIZE           = 25
+TOPI_SIZE           = 26
 CLAIMI_SIZE         = TOPI_SIZE
 
 def clog2(x):
@@ -77,34 +77,37 @@ class AddrMap:
   """Dump Verilog"""
   def emit_verilog(self):
     output = "// Do not edit - auto-generated\n"
-    output += "module {} (\n".format(self.name)
+    output += "module {} #(\n".format(file_name)
+    output += "   parameter int NR_SRC {},\n".format(nr_src)
+    output += "   parameter int NR_IDCs {}\n".format(nr_idc)
+    output += ") (\n"
     for i in self.ports:
       # self.ports.append((name, num, width, access))
       output += "  // Register: {}\n".format(i[0])
       if i[3] == Access.RO:
-        output += "  input logic [{}:0][{}:0] {}_i,\n".format(i[1]-1, i[2]-1, i[0])
-        output += "  output logic [{}:0] {}_re_o,\n".format(i[1]-1, i[0])
+        output += "  input logic [{}:0][{}:0] i_{},\n".format(i[1]-1, i[2]-1, i[0])
+        output += "  output logic [{}:0] o_{}_re,\n".format(i[1]-1, i[0])
       elif i[3] == Access.RW:
-        output += "  input logic [{}:0][{}:0] {}_i,\n".format(i[1]-1, i[2]-1, i[0])
-        output += "  output logic [{}:0][{}:0] {}_o,\n".format(i[1]-1, i[2]-1, i[0])
-        output += "  output logic [{}:0] {}_we_o,\n".format(i[1]-1, i[0])
-        output += "  output logic [{}:0] {}_re_o,\n".format(i[1]-1, i[0])
+        output += "  input logic [{}:0][{}:0] i_{},\n".format(i[1]-1, i[2]-1, i[0])
+        output += "  output logic [{}:0][{}:0] o_{},\n".format(i[1]-1, i[2]-1, i[0])
+        output += "  output logic [{}:0] o_{}_we,\n".format(i[1]-1, i[0])
+        output += "  output logic [{}:0] o_{}_re,\n".format(i[1]-1, i[0])
     output += "  // Bus Interface\n"
-    output += "  input  reg_intf::reg_intf_req_a32_d32 req_i,\n"
-    output += "  output reg_intf::reg_intf_resp_d32    resp_o\n"
+    output += "  input  reg_intf::reg_intf_req_a32_d32 i_req,\n"
+    output += "  output reg_intf::reg_intf_resp_d32    o_resp\n"
     output += ");\n"
     output += "always_comb begin\n"
-    output += "  resp_o.ready = 1'b1;\n"
-    output += "  resp_o.rdata = '0;\n"
-    output += "  resp_o.error = '0;\n"
+    output += "  o_resp.ready = 1'b1;\n"
+    output += "  o_resp.rdata = '0;\n"
+    output += "  o_resp.error = '0;\n"
     for i in self.ports:
       if i[3] != Access.RO:
-        output += "  {}_o = '0;\n".format(i[0])
-        output += "  {}_we_o = '0;\n".format(i[0])
-        output += "  {}_re_o = '0;\n".format(i[0])
-    output += "  if (req_i.valid) begin\n"
-    output += "    if (req_i.write) begin\n"
-    output += "      unique case(req_i.addr)\n"
+        output += "  o_{}_o = '0;\n".format(i[0])
+        output += "  o_{}_we = '0;\n".format(i[0])
+        output += "  o_{}_re = '0;\n".format(i[0])
+    output += "  if (i_req.valid) begin\n"
+    output += "    if (i_req.write) begin\n"
+    output += "      unique case(i_req.addr)\n"
     j = 0
     last_name = ""
     for i in self.addrmap:
@@ -112,27 +115,27 @@ class AddrMap:
         if last_name != i.name:
           j = 0
         output += "        {}'h{}: begin\n".format(self.access_width, hex(i.addr)[2:])
-        output += "          {}_o[{}][{}:0] = req_i.wdata[{}:0];\n".format(i.name, j, i.width - 1, i.width - 1)
-        output += "          {}_we_o[{}] = 1'b1;\n".format(i.name, j)
+        output += "          o_{}[{}][{}:0] = i_req.wdata[{}:0];\n".format(i.name, j, i.width - 1, i.width - 1)
+        output += "          o_{}_we[{}] = 1'b1;\n".format(i.name, j)
         output += "        end\n"
         j += 1
         last_name = i.name
-    output += "        default: resp_o.error = 1'b1;\n"
+    output += "        default: o_resp.error = 1'b1;\n"
     output += "      endcase\n"
     output += "    end else begin\n"
-    output += "      unique case(req_i.addr)\n"
+    output += "      unique case(i_req.addr)\n"
     j = 0
     last_name = ""
     for i in self.addrmap:
       if last_name != i.name:
         j = 0
       output += "        {}'h{}: begin\n".format(self.access_width, hex(i.addr)[2:])
-      output += "          resp_o.rdata[{}:0] = {}_i[{}][{}:0];\n".format(i.width - 1, i.name, j, i.width - 1)
-      output += "          {}_re_o[{}] = 1'b1;\n".format(i.name, j)
+      output += "          o_resp.rdata[{}:0] = i_{}[{}][{}:0];\n".format(i.width - 1, i.name, j, i.width - 1)
+      output += "          o_{}_re[{}] = 1'b1;\n".format(i.name, j)
       output += "        end\n"
       j += 1
       last_name = i.name
-    output += "        default: resp_o.error = 1'b1;\n"
+    output += "        default: o_resp.error = 1'b1;\n"
     output += "      endcase\n"
     output += "    end\n"
     output += "  end\n"
@@ -142,16 +145,17 @@ class AddrMap:
 
   """Dump Interface to APLIC Domain"""
   def dumpInterface(self):
-    output = "// Do not edit - auto-generated\n"
-    output += "module aplic_domain_top #(\n"
+    output = "//\n"
+    output += "module " + file_top_name + " #(\n"
     output += "   parameter int                           N_SOURCE = {},\n" .format(nr_src)
-    output += "   parameter int                           N_TARGET = {},\n" .format(nr_idc)
+    output += "   parameter int                           N_TARGET = {}\n" .format(nr_idc)
     output += ") (\n"
     output += "   input  logic                            i_clk,\n"
     output += "   input  logic                            ni_rst,\n"
     output += "   input  reg_intf::reg_intf_req_a32_d32   i_req,\n"
     output += "   output reg_intf::reg_intf_resp_d32      o_resp,\n"
     output += "   input  logic [N_SOURCE-1:0]             i_irq_sources,\n"
+    output += "   output logic [N_SOURCE-1:0]             o_irq_del_sources,\n"
     if(domain_level == MMODE):
       output += "   output logic [N_TARGET-1:0]             o_meip_targets\n"
     elif(domain_level == SMODE):
@@ -161,14 +165,26 @@ class AddrMap:
     for i in self.ports:
       output += "\n// Register {}\n".format(i[0]) 
       if i[3] == Access.RO:
-        output += "logic [{}:0][{}:0] {}_to_regmap;\n".format(i[1]-1, i[2]-1, i[0])
-        output += "logic [{}:0]       {}_re;\n".format(i[1]-1, i[0])
+        output += "logic [{}:0][{}:0]   {}_qi;\n".format(i[1]-1, i[2]-1, i[0])
+        output += "logic [{}:0]         {}_re;\n".format(i[1]-1, i[0])
       elif i[3] == Access.RW:
-        output += "logic [{}:0][{}:0] {}_to_regmap;\n".format(i[1]-1, i[2]-1, i[0])
-        output += "logic [{}:0][{}:0] {}_from_regmap;\n".format(i[1]-1, i[2]-1, i[0])
-        output += "logic [{}:0]       {}_we;\n".format(i[1]-1, i[0])
-        output += "logic [{}:0]       {}_re;\n".format(i[1]-1, i[0])
+        output += "logic [{}:0][{}:0]   {}_qi;\n".format(i[1]-1, i[2]-1, i[0])
+        output += "logic [{}:0][{}:0]   {}_qo;\n".format(i[1]-1, i[2]-1, i[0])
+        output += "logic [{}:0]         {}_we;\n".format(i[1]-1, i[0])
+        output += "logic [{}:0]         {}_re;\n".format(i[1]-1, i[0])
 
+    output += "\n"+file_name+" i_"+file_name+"(\n"
+    for i in self.ports:
+      output += "  // Register: {}\n".format(i[0])
+      if i[3] == Access.RO:
+        output += "   .i_{}({}_qi),\n".format(i[0], i[0])
+        output += "   .o_{}_re({}_re),\n".format(i[0], i[0])
+      elif i[3] == Access.RW:
+        output += "   .i_{}({}_qi),\n".format(i[0], i[0])
+        output += "   .o_{}({}_qo),\n".format(i[0], i[0])
+        output += "   .o_{}_we({}_we),\n".format(i[0], i[0])
+        output += "   .o_{}_re({}_re),\n".format(i[0], i[0])
+    output += "); // End of Regmap instance\n\n"
     output += "endmodule\n"
     return output
 
@@ -332,6 +348,9 @@ if __name__ == "__main__":
     return claimiOff + addr_base + i * 0x20
 
   def addIDC(aplic_idc_base, num_idcs, mode):
+    if(num_idcs == 0):
+      return 0
+
     # idelivery register
     addrmap.addEntries(num_idcs, ideliveryAddr, aplic_idc_base, mode + "idelivery", mode + "idelivery", Access.RW, IDELIVERY_SIZE)
 
@@ -383,7 +402,8 @@ if __name__ == "__main__":
     # implement only 1 setip reg with only the existent sources
     nr_setip = nr_reg_needed_for_interrupt
     if nr_setip == 0:
-      addrmap.addEntry(setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, nr_src_eff)
+      #addrmap.addEntry(setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, nr_src_eff)
+      addrmap.addEntry(setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, REGISTER_DEF_SIZE32)
     elif nr_setip >= 1:
       addrmap.addEntries(nr_setip+1, setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, REGISTER_DEF_SIZE32)
 
@@ -396,7 +416,8 @@ if __name__ == "__main__":
       # implement only 1 setip reg with only the existent sources
     nr_in_clrip = nr_reg_needed_for_interrupt
     if nr_in_clrip == 0:
-      addrmap.addEntry(in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, nr_src_eff)
+      #addrmap.addEntry(in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, nr_src_eff)
+      addrmap.addEntry(in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, REGISTER_DEF_SIZE32)
     elif nr_in_clrip >= 1:
       addrmap.addEntries(nr_in_clrip+1, in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, REGISTER_DEF_SIZE32)
 
@@ -409,7 +430,8 @@ if __name__ == "__main__":
       # implement only 1 setip reg with only the existent sources
     nr_setie = nr_reg_needed_for_interrupt
     if nr_setie == 0:
-      addrmap.addEntry(setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, nr_src_eff)
+      #addrmap.addEntry(setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, nr_src_eff)
+      addrmap.addEntry(setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, REGISTER_DEF_SIZE32)
     elif nr_setie >= 1:
       addrmap.addEntries(nr_setie+1, setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, REGISTER_DEF_SIZE32)
 
@@ -422,7 +444,8 @@ if __name__ == "__main__":
       # implement only 1 setip reg with only the existent sources
     nr_clrie = nr_reg_needed_for_interrupt
     if nr_clrie == 0:
-      addrmap.addEntry(clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.RW, nr_src_eff)
+      #addrmap.addEntry(clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.RW, nr_src_eff)
+      addrmap.addEntry(clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.RW, REGISTER_DEF_SIZE32)
     elif nr_clrie >= 1:
       addrmap.addEntries(nr_clrie+1, clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.RW, REGISTER_DEF_SIZE32)
 
@@ -451,14 +474,20 @@ if __name__ == "__main__":
   addDomain(domain_level, s_domain, nr_idc, addr)
   
   if(domain_level == MMODE):
-    file_name = "aplic_m_"+ domain_id + "regmap.sv"
+    file_name = "aplic_m_"+ domain_id + "regmap"
+    file_top_name = "aplic_m_domain_"+ domain_id + "top"
   elif(domain_level == SMODE):
-    file_name = "aplic_s_"+ domain_id + "regmap.sv"
+    file_name = "aplic_s_"+ domain_id + "regmap"
+    file_top_name = "aplic_s_domain_"+ domain_id + "top"
 
-  proceed = input("This operation will rewrite the file: "+file_name+" do you want to proceed? (y, n)")
+  proceed = input("This operation will rewrite the file: "+file_name+".sv do you want to proceed? (y, n)")
   if(proceed == "y"):
-    #print(addrmap.emit_verilog(), file=open(file_name, 'w'))
-    print(addrmap.dumpInterface(), file=open("aplic_domain_top.sv", 'w'))
+    print(addrmap.emit_verilog(), file=open(file_name+".sv", 'w'))
+    proceed = input("Do you want to generate the aplic top interface? (y, n)")
+    if(proceed == "y"):
+      print(addrmap.dumpInterface(), file=open(file_top_name+".sv", 'w'))
+    else:
+      print("Nothing to do.")
   elif(proceed == "n"):
     print("Operation aborted. Nothing to do.")
   else:
