@@ -8,6 +8,10 @@
   - [[#overview][Overview]]
   - [[#arguments][Arguments]]
   - [[#usage][Usage]]
+- [[#aplic-top][APLIC top]]
+  - [[#overview-1][Overview]]
+  - [[#arguments-1][Arguments]]
+  - [[#usage-1][Usage]]
 
 * Register Map
 ** Overview
@@ -41,4 +45,23 @@ To create a L-Level domain, with base address at 0xD000000, with 4 IDCs, 31 sour
 
 #+begin_src bash
 python regmap-autogenerate.py -d M -a 0xD000000 -i 4 -s 31 -p 6 -I 1
+#+end_src
+* APLIC top
+** Overview
+The APLIC top is the interface instantiated at a SoC. The APLIC top, has as inputs the external interrupts sources and as many axi interfaces (request and response) as APLIC domains are instantiated at APLIC top. It has as output the axi interface for bus (MSI delivery mode) and/or wires to connect to the hart (direct delivery mode)
+** Arguments
+The APLIC top is generated automatically through a python script. The script as the following arguments.
+
+|------+---------+----------------------------------------|
+| Flag | Default | Description                            |
+|------+---------+----------------------------------------|
+| -d   |       1 | Number of domains                      |
+| -i   |       1 | Number of IDC connected to harts       |
+| -s   |      30 | Number of external interrupt sources   |
+|------+---------+----------------------------------------|
+** Usage
+To create an APLIC top interface that implements 2 domains, has 20 external interrupt sources and has 2 IDCs connected to harts (that is, one hart with M and S priv level)
+
+#+begin_src bash
+python generate-top.py -d 2 -i 2 -s 20
 #+end_src
