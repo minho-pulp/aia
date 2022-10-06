@@ -1,20 +1,20 @@
 //
 module aplic_domain_gateway #(
     parameter int NR_SRC = 32,
-    parameter int NR_BITS_SRC = (NR_SRC > 32)? 32:NR_SRC,
-    parameter int NR_REG = (NR_SRC > 32)? NR_SRC/32:1
+    parameter int NR_BITS_SRC = (NR_SRC > 31)? 32 : NR_SRC,
+    parameter int NR_REG = NR_SRC/32 //(NR_SRC > 31)? NR_SRC/32 : 1
 ) (
     input   logic                                     i_clk,
     input   logic                                     ni_rst,
     input   logic [NR_SRC-1:0]                        i_sources,
     input   logic [NR_SRC-1:0][10:0]                  i_sourcecfg,
-    input   logic [NR_REG-1:0][NR_BITS_SRC-1:0]       i_setip,
+    input   logic [NR_REG:0][NR_BITS_SRC-1:0]       i_setip,
     input   logic                                     i_domaincfgDM,
     input   logic [NR_SRC-1:0]                        i_active,
     input   logic [NR_SRC-1:0]                        i_claimed,
     input   logic [NR_SRC-1:0]                        i_forwarded,
     input   logic [NR_SRC-1:0]                        i_succ_w_clr,
-    output  logic [NR_REG-1:0][NR_BITS_SRC-1:0]       o_intp_pen,
+    output  logic [NR_REG:0][NR_BITS_SRC-1:0]       o_intp_pen,
     output  logic [NR_SRC-1:0]                        o_rectified_src
 );
 
