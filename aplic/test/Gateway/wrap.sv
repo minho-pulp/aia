@@ -1,3 +1,13 @@
+/**
+* Name: Gatway Wrapper
+* Date: 7/10/2022
+* Author: F.Marques <fmarques_00@protonmail.com>
+*
+* Description: Cocotb apparently in version 1.7.1 cannot read multidimensional
+*              arrays (array[x][y]). As so, to make sure that the DUT is properly 
+*              tested, this wrapper converts 2D arrays into 1D for the DUT interface.
+*/
+
 module aplic_domain_gateway_wrapper #(
     parameter int NR_SRC = 64,
     parameter int NR_BITS_SRC = (NR_SRC > 31)? 32 : NR_SRC,
