@@ -92,7 +92,7 @@ end
 /** Choose logic to set pend */
 always_comb begin
    for(int j = 0; j <= NR_REG; j++) begin
-        for (int i = 1; i < NR_SRC; i++) begin
+        for (int i = 1; i < NR_BITS_SRC; i++) begin
             case (intp_pen_src_i[(j*NR_BITS_SRC) + i])
                 DETACHED_C: begin
                     o_intp_pen[j][i] = i_setip[j][i] & i_active[j][i] & ~(i_claimed[j][i] | i_forwarded[j][i] | i_succ_w_clr[j][i]);
