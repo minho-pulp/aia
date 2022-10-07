@@ -1,7 +1,8 @@
 from os import setpgid
 from readline import set_pre_input_hook
 import cocotb
-from cocotb.triggers import FallingEdge, Timer
+from cocotb.triggers import RisingEdge, FallingEdge, Timer
+import random
 
 # The test functions need to use the decorator @cocotb.test()
 
@@ -29,6 +30,8 @@ LEVELXDM1_C          = 4
 
 FROM_RECTIFIER       = 0
 FROM_EDGE_DETECTOR   = 1
+
+SRC_PER_BIT          = 1
 
 class CInputs:
     source          = 0
@@ -111,12 +114,59 @@ async def test_control_unit(dut):
     input.sourcecfg             = set_reg(input.sourcecfg, EDGE0, SOURCECFD_W, 52)
     dut.i_sourcecfg.value       = input.sourcecfg
 
+    # The expected values in new_intp_src are:
     await Timer(1, units="ns")
-    internal.new_intp_src       = set_reg(internal.new_intp_src, 0x00, 1, 0)
-    internal.new_intp_src       = set_reg(internal.new_intp_src, 0x01, 1, 1)
-    internal.new_intp_src       = set_reg(internal.new_intp_src, 0x00, 1, 2)
-    internal.new_intp_src       = set_reg(internal.new_intp_src, 0x01, 1, 52)
+    internal.new_intp_src       = set_reg(internal.new_intp_src, 0x00, SRC_PER_BIT, 0)
+    internal.new_intp_src       = set_reg(internal.new_intp_src, 0x01, SRC_PER_BIT, 1)
+    internal.new_intp_src       = set_reg(internal.new_intp_src, 0x00, SRC_PER_BIT, 2)
+    internal.new_intp_src       = set_reg(internal.new_intp_src, 0x01, SRC_PER_BIT, 52)
 
+async def test_gatway_source1(dut):
+    # Set Domain config Delivery Mode to 0: meaning Direct 
+    dut.i_domaincfgDM.value = 0
+
+    # Source 1 is configured to receive rising edge interrupts
+    input.sourcecfg             = set_reg(input.sourcecfg, EDGE1, SOURCECFD_W, 1)
+    dut.i_sourcecfg.value       = input.sourcecfg
+
+    # Source 1 is not pending
+    input.setip                 = set_reg(input.setip, 0, SRC_PER_BIT, 1)
+    dut.i_setip.value           = input.setip
+
+    # Source 1 was not claimed
+    input.claimed                 = set_reg(input.claimed, 0, SRC_PER_BIT, 1)
+    dut.i_claimed.value           = input.claimed
+    # Source 1 was not forwarded
+    input.forwarded                 = set_reg(input.forwarded, 0, SRC_PER_BIT, 1)
+    dut.i_forwarded.value           = input.forwarded
+    # Source 1 was not cleared
+    input.succ_w_clr                 = set_reg(input.succ_w_clr, 0, SRC_PER_BIT, 1)
+    dut.i_succ_w_clr.value           = input.succ_w_clr
+
+    # Make Source 1 active
+    input.active                 = set_reg(input.active, 1, SRC_PER_BIT, 1)
+    dut.i_active.value           = input.active
+
+    await Timer(random.randint(2,7), units="ns")
+    input.source                 = set_reg(input.source, 1, SRC_PER_BIT, 1)
+    dut.i_sources.value           = input.source
+    
+    await Timer(1, units="ns")
+    # After it receives the interrupt, the pending bit becomes one
+    aux = int(dut.o_intp_pen)
+    aux = (aux >> 1) & 1
+    input.setip                 = set_reg(input.setip, aux, SRC_PER_BIT, 1)
+    dut.i_setip.value           = input.setip
+    # Clear the source interrupt
+    input.source                 = 0#set_reg(input.source, 0, SRC_PER_BIT, 1)
+    dut.i_sources.value          = input.source
+
+    await Timer(random.randint(1,3), units="ns")
+    input.claimed                 = set_reg(input.claimed, 1, SRC_PER_BIT, 1)
+    dut.i_claimed.value           = input.claimed
+
+    # Expected Values
+    internal.new_intp_src       = set_reg(internal.new_intp_src, 0x01, 1, 1)
     
 async def generate_clock(dut):
     """Generate clock pulses."""
@@ -146,9 +196,11 @@ async def gateway_unit_test(dut):
     await Timer(1, units="ns")
 
     #await cocotb.start(debug_config(dut))
-    await cocotb.start(test_control_unit(dut))
+    #await cocotb.start(test_control_unit(dut))
+    await cocotb.start(test_gatway_source1(dut))
 
     await Timer(15, units="ns")
+    #TODO Add asserts for outputs
     assert dut.i_sourcecfg.value    == input.sourcecfg  , "Oh boy, you mess it up in sourcecfg!"
     assert dut.i_setip.value        == input.setip      , "Oh boy, you mess it up in setip!"
     assert dut.i_active.value       == input.active     , "Oh boy, you mess it up in active!"
