@@ -41,10 +41,10 @@ class CInputs:
 
 class CInternals:
     rectified_src   = 0
-    new_intp        = 0
+    new_intp        = 0 # DO NOT READ THIS REGISTER IT WILL BREAK COCOTB (2D ARRAY SOLVED ONLY FOR INTERFACE)
     rectified_src   = 0
     new_intp_src    = 0
-    intp_pen_src    = 0
+    intp_pen_src    = 0 # DO NOT READ THIS REGISTER IT WILL BREAK COCOTB (2D ARRAY SOLVED ONLY FOR INTERFACE)
 
 class COutputs:
     intp_pen        = 0
@@ -149,10 +149,10 @@ async def gateway_unit_test(dut):
     await cocotb.start(test_control_unit(dut))
 
     await Timer(15, units="ns")
-    assert dut.i_sourcecfg.value    == input.sourcecfg  , "Oh boy, you fucked it up in sourcecfg!"
-    assert dut.aplic_domain_gateway_i.new_intp_src.value == internal.new_intp_src  , "Oh boy, you fucked it up in new_intp_src!"
-    # assert dut.i_setip.value        == input.setip      , "Oh boy, you fucked it up in setip!"
-    # assert dut.i_active.value       == input.active     , "Oh boy, you fucked it up in active!"
-    # assert dut.i_claimed.value      == input.claimed    , "Oh boy, you fucked it up in claimed!"
-    # assert dut.i_forwarded.value    == input.forwarded  , "Oh boy, you fucked it up in forwarded!"
-    # assert dut.i_succ_w_clr.value   == input.succ_w_clr , "Oh boy, you fucked it up in succ_w_clr!"
+    assert dut.i_sourcecfg.value    == input.sourcecfg  , "Oh boy, you mess it up in sourcecfg!"
+    assert dut.i_setip.value        == input.setip      , "Oh boy, you mess it up in setip!"
+    assert dut.i_active.value       == input.active     , "Oh boy, you mess it up in active!"
+    assert dut.i_claimed.value      == input.claimed    , "Oh boy, you mess it up in claimed!"
+    assert dut.i_forwarded.value    == input.forwarded  , "Oh boy, you mess it up in forwarded!"
+    assert dut.i_succ_w_clr.value   == input.succ_w_clr , "Oh boy, you mess it up in succ_w_clr!"
+    assert dut.aplic_domain_gateway_i.new_intp_src.value == internal.new_intp_src  , "Oh boy, you mess it up in new_intp_src!"
