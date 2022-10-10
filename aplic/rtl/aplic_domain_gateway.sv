@@ -20,7 +20,7 @@ module aplic_domain_gateway #(
     input   logic                                     ni_rst,
     input   logic [NR_SRC-1:0]                        i_sources,
     input   logic [NR_SRC-1:0][10:0]                  i_sourcecfg,
-    input   logic [NR_REG:0][NR_BITS_SRC-1:0]         i_setip,
+    input   logic [NR_REG:0][NR_BITS_SRC-1:0]         i_sugg_setip,
     input   logic                                     i_domaincfgDM,
     input   logic [NR_REG:0][NR_BITS_SRC-1:0]         i_active,
     input   logic [NR_REG:0][NR_BITS_SRC-1:0]         i_claimed,
@@ -107,16 +107,16 @@ always_comb begin
         for (int i = 1; i < NR_BITS_SRC; i++) begin
             case (intp_pen_src_i[(j*NR_BITS_SRC) + i])
                 DETACHED_C: begin
-                    o_intp_pen[j][i] = i_setip[j][i] & i_active[j][i] & ~(i_claimed[j][i] | i_forwarded[j][i] | i_succ_w_clr[j][i]);
+                    o_intp_pen[j][i] = i_sugg_setip[j][i] & i_active[j][i] & ~(i_claimed[j][i] | i_forwarded[j][i] | i_succ_w_clr[j][i]);
                 end
                 EDGEX_C: begin
-                    o_intp_pen[j][i] = (new_intp_i[j][i] | i_setip[j][i]) & i_active[j][i] & ~(i_claimed[j][i] | i_forwarded[j][i] | i_succ_w_clr[j][i]);
+                    o_intp_pen[j][i] = (new_intp_i[j][i] | i_sugg_setip[j][i]) & i_active[j][i] & ~(i_claimed[j][i] | i_forwarded[j][i] | i_succ_w_clr[j][i]);
                 end
                 LEVELXDM0_C: begin
                     o_intp_pen[j][i] = new_intp_i[j][i] & i_active[j][i];
                 end
                 LEVELXDM1_C: begin
-                    o_intp_pen[j][i] = (new_intp_i[j][i] | i_setip[j][i]) & i_active[j][i] & ~(~new_intp_i[j][i] | i_forwarded[j][i] | i_succ_w_clr[j][i]);
+                    o_intp_pen[j][i] = (new_intp_i[j][i] | i_sugg_setip[j][i]) & i_active[j][i] & ~(~new_intp_i[j][i] | i_forwarded[j][i] | i_succ_w_clr[j][i]);
                 end
                 default: begin
                     o_intp_pen[j][i] = 1'b0;
