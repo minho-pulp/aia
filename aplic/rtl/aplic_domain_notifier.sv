@@ -55,6 +55,8 @@ if(MODE == "DIRECT") begin
     /** Update outputs with IDC validation */
     for (genvar i = 0; i < NR_IDC; i++) begin
         assign o_Xeip_targets[i] = i_domaincfgIE & i_idelivery[i] & 
+                                   (has_valid_intp_i[i] | i_iforce[i]);
+        assign o_topi_update = has_valid_intp_i[i];
     end
 end
 
