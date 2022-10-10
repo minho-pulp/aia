@@ -1,5 +1,5 @@
 //
-module aplic_m_domain_top #(
+module aplic_s_domain_top #(
    parameter int                           NR_SRC    = 30,
    parameter int                           MIN_PRIO  = 6,
    parameter int                           IPRIOLEN  = 3,
@@ -11,7 +11,7 @@ module aplic_m_domain_top #(
    output reg_intf::reg_intf_resp_d32      o_resp,
    input  logic [NR_SRC-1:0]               i_irq_sources,
    output logic [NR_SRC-1:0]               o_irq_del_sources,
-   output logic [NR_IDCs-1:0]              o_meip_targets
+   output logic [NR_IDCs-1:0]              o_seip_targets
 );
 
 // Register domaincfg
@@ -25,30 +25,6 @@ logic [NR_SRC:0][10-1:0]     sourcecfg_qi;
 logic [NR_SRC:0][10-1:0]     sourcecfg_qo;
 logic [NR_SRC:0]             sourcecfg_we;
 logic [NR_SRC:0]             sourcecfg_re;
-
-// Register mmsiaddrcfg
-logic [0:0][31:0]       mmsiaddrcfg_qi;
-logic [0:0][31:0]       mmsiaddrcfg_qo;
-logic [0:0]             mmsiaddrcfg_we;
-logic [0:0]             mmsiaddrcfg_re;
-
-// Register mmsiaddrcfgh
-logic [0:0][31:0]       mmsiaddrcfgh_qi;
-logic [0:0][31:0]       mmsiaddrcfgh_qo;
-logic [0:0]             mmsiaddrcfgh_we;
-logic [0:0]             mmsiaddrcfgh_re;
-
-// Register smsiaddrcfg
-logic [0:0][31:0]       smsiaddrcfg_qi;
-logic [0:0][31:0]       smsiaddrcfg_qo;
-logic [0:0]             smsiaddrcfg_we;
-logic [0:0]             smsiaddrcfg_re;
-
-// Register smsiaddrcfgh
-logic [0:0][31:0]       smsiaddrcfgh_qi;
-logic [0:0][31:0]       smsiaddrcfgh_qo;
-logic [0:0]             smsiaddrcfgh_we;
-logic [0:0]             smsiaddrcfgh_re;
 
 // Register setip
 logic [0:0][31:0]       setip_qi;
@@ -164,26 +140,6 @@ aplic_regmap #(
    .o_sourcecfg(sourcecfg_qo),
    .o_sourcecfg_we(sourcecfg_we),
    .o_sourcecfg_re(sourcecfg_re),
-   // Register: mmsiaddrcfg
-   .i_mmsiaddrcfg(mmsiaddrcfg_qi),
-   .o_mmsiaddrcfg(mmsiaddrcfg_qo),
-   .o_mmsiaddrcfg_we(mmsiaddrcfg_we),
-   .o_mmsiaddrcfg_re(mmsiaddrcfg_re),
-   // Register: mmsiaddrcfgh
-   .i_mmsiaddrcfgh(mmsiaddrcfgh_qi),
-   .o_mmsiaddrcfgh(mmsiaddrcfgh_qo),
-   .o_mmsiaddrcfgh_we(mmsiaddrcfgh_we),
-   .o_mmsiaddrcfgh_re(mmsiaddrcfgh_re),
-   // Register: smsiaddrcfg
-   .i_smsiaddrcfg(smsiaddrcfg_qi),
-   .o_smsiaddrcfg(smsiaddrcfg_qo),
-   .o_smsiaddrcfg_we(smsiaddrcfg_we),
-   .o_smsiaddrcfg_re(smsiaddrcfg_re),
-   // Register: smsiaddrcfgh
-   .i_smsiaddrcfgh(smsiaddrcfgh_qi),
-   .o_smsiaddrcfgh(smsiaddrcfgh_qo),
-   .o_smsiaddrcfgh_we(smsiaddrcfgh_we),
-   .o_smsiaddrcfgh_re(smsiaddrcfgh_re),
    // Register: setip
    .i_setip(setip_qi),
    .o_setip(setip_qo),
