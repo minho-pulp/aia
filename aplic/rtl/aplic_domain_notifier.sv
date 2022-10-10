@@ -9,6 +9,9 @@ module aplic_domain_notifier #(
     input   logic                                   i_clk,
     input   logic                                   ni_rst,
     input   logic                                   i_domaincfgIE,
+    input   logic [NR_REG:0][NR_BITS_SRC-1:0]       i_setip_q,
+    input   logic [NR_REG:0][NR_BITS_SRC-1:0]       i_setie_q,
+    input   logic [NR_SRC-1:0][31:0]                i_target_q,
     /**  interface for direct mode */
     input   logic [NR_IDC-1:0][0:0]                 i_idelivery,
     input   logic [NR_IDC-1:0][0:0]                 i_iforce,
@@ -17,12 +20,12 @@ module aplic_domain_notifier #(
     input   logic [NR_IDC-1:0][25:0]                i_claimi,
     output  logic [NR_IDC-1:0][25:0]                o_topi_sugg,
     output  logic                                   o_topi_update,
-    output  logic [NR_IDC-1:0]                      o_Xeip_targets,
+    output  logic [NR_IDC-1:0]                      o_Xeip_targets //,
     /** interface for MSI mode */
-    input   logic [31:0]                            i_mmsiaddrcfg,
-    input   logic [31:0]                            i_mmsiaddrcfgh,
-    input   logic [31:0]                            i_smsiaddrcfg,
-    input   logic [31:0]                            i_smsiaddrcfgh
+    // input   logic [31:0]                            i_mmsiaddrcfg,
+    // input   logic [31:0]                            i_mmsiaddrcfgh,
+    // input   logic [31:0]                            i_smsiaddrcfg,
+    // input   logic [31:0]                            i_smsiaddrcfgh
     // Outputs for MSI interface here
 );
 
