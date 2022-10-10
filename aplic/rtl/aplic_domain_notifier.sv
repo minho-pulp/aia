@@ -8,10 +8,7 @@ module aplic_domain_notifier #(
 ) (
     input   logic                                   i_clk,
     input   logic                                   ni_rst,
-    input   logic [31:0]                            i_domaincfg_q,
-    input   logic [NR_REG-1:0][NR_BITS_SRC-1:0]     i_setip_q,
-    input   logic [NR_REG-1:0][NR_BITS_SRC-1:0]     i_setie_q,
-    input   logic [NR_SRC-1:0]                      i_target_q,
+    input   logic                                   i_domaincfgIE,
     /**  interface for direct mode */
     input   logic [NR_IDC-1:0][0:0]                 i_idelivery,
     input   logic [NR_IDC-1:0][0:0]                 i_iforce,
@@ -50,10 +47,7 @@ if(MODE == "DIRECT") begin
     end
 
     /** Update outputs with IDC validation */
-    for (int i = 0; i < NR_IDC; i++) begin
-        assign o_Xeip_targets[i] = i_domaincfg_q[8] & i_idelivery[i] & 
-                                   (has_valid_intp_i[hart_index_i] | i_iforce[i]);
-        assign o_topi_update = has_valid_intp_i[hart_index_i];
+        assign o_Xeip_targets[i] = i_domaincfgIE & i_idelivery[i] & 
     end
 end
 
