@@ -53,6 +53,7 @@ if(MODE == "DIRECT") begin
     end
 
     /** Update outputs with IDC validation */
+    for (genvar i = 0; i < NR_IDC; i++) begin
         assign o_Xeip_targets[i] = i_domaincfgIE & i_idelivery[i] & 
     end
 end
