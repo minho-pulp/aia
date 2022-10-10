@@ -39,14 +39,16 @@ if(MODE == "DIRECT") begin
     /** Detect highest pending-enabled interrut and discover hart index*/
     always_comb begin
         for (int i = NR_SRC-1 ; i >= 0 ; i--) begin
-            has_valid_intp_i[hart_index_i] = 1'b0;
+            hart_index_i = i_target_q[i][18 +: NR_IDC_W];
             /** If the interrupt is pending and enabled*/
-            if ((i_setip_q[i/32][i%32] & i_setie_q[i/32][i%32]) == 1'b1) begin
-                hart_index_i = target[i][31:18];
-                if(i_target_q[i][7:0] < i_ithreshold[target[i][31:18]]) begin
+            if (i_setip_q[i/32][i%32] && i_setie_q[i/32][i%32]) begin
+                /** Is the interrupt able to contribute to IDC interrupt? */
+                /** "interrupt sources with priority numbers P and higher DO NOT
+                *   contribute to signaling interrupts to the hart" */
+                if((i_target_q[i][2:0] < i_ithreshold[i_target_q[i][18 +: NR_IDC_W]]) || 
+                    (i_ithreshold[i_target_q[i][18 +: NR_IDC_W]] == 0)) begin
                     has_valid_intp_i[hart_index_i] = 1'b1;
-                    o_topi_sugg[25:16]  = i;
-                    o_topi_sugg[7:0]    = i_target[i][7:0];
+                    o_topi_sugg[hart_index_i]      = {i[9:0], 8'b0, i_target_q[i][7:0]};
                 end
             end
         end 
