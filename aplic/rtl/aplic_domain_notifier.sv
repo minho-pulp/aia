@@ -26,8 +26,11 @@ module aplic_domain_notifier #(
     // Outputs for MSI interface here
 );
 
-logic [NR_IDC-1:0]  has_valid_intp_i;
-logic [14:0]        hart_index_i;
+localparam DOMAINCFG_IE = 8;
+localparam NR_IDC_W     = (NR_IDC == 1) ? 1 : $clog2(NR_IDC);
+
+logic [NR_IDC-1:0]      has_valid_intp_i;
+logic [NR_IDC_W-1:0]    hart_index_i;
 
 if(MODE == "DIRECT") begin
     /** Detect highest pending-enabled interrut and discover hart index*/
