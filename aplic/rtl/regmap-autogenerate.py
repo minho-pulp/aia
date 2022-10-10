@@ -78,8 +78,10 @@ class AddrMap:
   def emit_verilog(self):
     output = "// Do not edit - auto-generated\n"
     output += "module {} #(\n".format(file_name)
-    output += "   parameter int NR_SRC {},\n".format(nr_src)
-    output += "   parameter int NR_IDCs {}\n".format(nr_idc)
+    output += "   parameter int NR_SRC    = {},\n".format(nr_src)
+    output += "   parameter int MIN_PRIO  = {},\n".format(min_prio)
+    output += "   parameter int IPRIOLEN  = {},\n".format(priority_width)
+    output += "   parameter int NR_IDCs   = {}\n".format(nr_idc)
     output += ") (\n"
     for i in self.ports:
       # self.ports.append((name, num, width, access))
