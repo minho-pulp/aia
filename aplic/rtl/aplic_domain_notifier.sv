@@ -16,8 +16,6 @@ module aplic_domain_notifier #(
     input   logic [NR_IDC-1:0][0:0]                 i_idelivery,
     input   logic [NR_IDC-1:0][0:0]                 i_iforce,
     input   logic [NR_IDC-1:0][2:0]                 i_ithreshold,
-    input   logic [NR_IDC-1:0][25:0]                i_topi,
-    input   logic [NR_IDC-1:0][25:0]                i_claimi,
     output  logic [NR_IDC-1:0][25:0]                o_topi_sugg,
     output  logic                                   o_topi_update,
     output  logic [NR_IDC-1:0]                      o_Xeip_targets //,
