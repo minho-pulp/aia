@@ -17,7 +17,7 @@ module aplic_domain_gateway_wrapper #(
     input   logic                                       ni_rst,
     input   logic [NR_SRC-1:0]                          i_sources,
     input   logic [((NR_SRC)*11)-1:0]                   i_sourcecfg,
-    input   logic [((NR_REG+1)*NR_BITS_SRC)-1:0]        i_setip,
+    input   logic [((NR_REG+1)*NR_BITS_SRC)-1:0]        i_sugg_setip,
     input   logic                                       i_domaincfgDM,
     input   logic [((NR_REG+1)*NR_BITS_SRC)-1:0]        i_active,
     input   logic [((NR_REG+1)*NR_BITS_SRC)-1:0]        i_claimed,
@@ -31,7 +31,7 @@ logic                                     clk_i;
 logic                                     rst_ni;
 logic [NR_SRC-1:0]                        sources_i;
 logic [NR_SRC-1:0][10:0]                  sourcecfg_i;
-logic [NR_REG:0][NR_BITS_SRC-1:0]         setip_i;
+logic [NR_REG:0][NR_BITS_SRC-1:0]         sugg_setip_i;
 logic                                     domaincfgDM_i;
 logic [NR_REG:0][NR_BITS_SRC-1:0]         active_i;
 logic [NR_REG:0][NR_BITS_SRC-1:0]         claimed_i;
@@ -51,7 +51,7 @@ for (genvar i = 0; i < NR_SRC; i++) begin
     assign sourcecfg_i[i]       = i_sourcecfg[i*11 +: 11];
 end
 for (genvar i = 0; i <= NR_REG; i++) begin
-    assign setip_i[i]           = i_setip[i*NR_BITS_SRC +: NR_BITS_SRC];
+    assign sugg_setip_i[i]      = i_sugg_setip[i*NR_BITS_SRC +: NR_BITS_SRC];
     assign active_i[i]          = i_active[i*NR_BITS_SRC +: NR_BITS_SRC];
     assign claimed_i[i]         = i_claimed[i*NR_BITS_SRC +: NR_BITS_SRC];
     assign forwarded_i[i]       = i_forwarded[i*NR_BITS_SRC +: NR_BITS_SRC];
@@ -69,7 +69,7 @@ aplic_domain_gateway#(
         .ni_rst(rst_ni),
         .i_sources(sources_i),
         .i_sourcecfg(sourcecfg_i),
-        .i_setip(setip_i),
+        .i_sugg_setip(sugg_setip_i),
         .i_domaincfgDM(domaincfgDM_i),
         .i_active(active_i),
         .i_claimed(claimed_i),
