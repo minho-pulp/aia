@@ -21,6 +21,8 @@ IDELIVERY_W             = 1
 IFORCE_W                = 1
 ITHRESHOLD_W            = 3
 TOPI_W                  = 26
+TOPI_INTP_ID            = 16
+TOPI_INTP_PRIO          = 0
  
 # interrupt sources macros
 # Just to make the code more readable
@@ -85,7 +87,7 @@ async def debug_config(dut):
     dut.i_setip_q.value         = input.setip_q
     
     # Make sure that interrupt 17 is disable
-    input.setie_q               = set_reg(input.setie_q, 0, SRC_PER_BIT, intp.SRC[17])
+    input.setie_q               = set_reg(input.setie_q, 1, SRC_PER_BIT, intp.SRC[17])
     dut.i_setie_q.value         = input.setie_q
     # Set enable bit for interrupt 13
     input.setie_q               = set_or_reg(input.setie_q, 1, SRC_PER_BIT, intp.SRC[13])
@@ -121,9 +123,9 @@ async def debug_config(dut):
 
     await Timer(1, units="ns")
     #### EXPECTED VALUES #####
-    outputs.topi_update = 1
-    outputs.topi_sugg = set_reg(outputs.topi_sugg, 0xD0002, TOPI_W, idc.ID[0])
-    outputs.Xeip_targets = set_reg(outputs.Xeip_targets, 1, IDC_PER_BIT, idc.ID[0])
+    outputs.topi_update         = 1
+    outputs.topi_sugg           = set_reg(outputs.topi_sugg, (17 << TOPI_INTP_ID) | (1 << TOPI_INTP_PRIO), TOPI_W, idc.ID[0])
+    outputs.Xeip_targets        = set_reg(outputs.Xeip_targets, 1, IDC_PER_BIT, idc.ID[0])
 
 async def generate_clock(dut):
     """Generate clock pulses."""
