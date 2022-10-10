@@ -11,7 +11,7 @@ import random
 
 NR_SRC                  = 32
 NR_BITS_SRC             = NR_SRC if (NR_SRC > 31) else 32
-NR_REG                  = NR_SRC/32 
+NR_REG                  = NR_SRC//32 
 
 # interrupt sources macros
 # Just to make the code more readable
