@@ -1,4 +1,16 @@
-//
+/**
+*
+* Name: APLIC Domain Gateway
+* Date: 7/10/2022 
+* Author: F.Marques <fmarques_00@protonmail.com>
+*
+* Description: The APLIC domian gateway is the module encharge of
+*              receiving the current setip array, and the new setip 
+*              and follow the section 4.6 of AIA spec to determine the
+*              new valid setip array value.
+*              Also in this module happens the inverted interrupts rectification
+*
+*/
 module aplic_domain_gateway #(
     parameter int NR_SRC = 32,
     parameter int NR_BITS_SRC = (NR_SRC > 31)? 32 : NR_SRC,
