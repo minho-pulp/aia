@@ -14,6 +14,7 @@ NR_BITS_SRC             = NR_SRC if (NR_SRC > 31) else 32
 NR_REG                  = NR_SRC/32 
 
 # interrupt sources macros
+# Just to make the code more readable
 class CSources:
     SRC = list(range(0, NR_SRC))
 
@@ -173,12 +174,12 @@ async def test_gatway_source1(dut):
     input.setip                 = set_or_reg(input.setip, aux, SRC_PER_BIT, intp.SRC[1])
     dut.i_setip.value           = input.setip
     # Clear the source interrupt
-    input.source                 = set_reg(input.source, 0, SRC_PER_BIT, intp.SRC[1])
-    dut.i_sources.value          = input.source
+    input.source                = set_reg(input.source, 0, SRC_PER_BIT, intp.SRC[1])
+    dut.i_sources.value         = input.source
 
     await Timer(random.randint(1,3), units="ns")
-    input.claimed                 = set_or_reg(input.claimed, 1, SRC_PER_BIT, intp.SRC[1])
-    dut.i_claimed.value           = input.claimed
+    input.claimed               = set_or_reg(input.claimed, 1, SRC_PER_BIT, intp.SRC[1])
+    dut.i_claimed.value         = input.claimed
 
     # Expected Values
     internal.new_intp_src       = set_or_reg(internal.new_intp_src, 0x01, 1, intp.SRC[1])
