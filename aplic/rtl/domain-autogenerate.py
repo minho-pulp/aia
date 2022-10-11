@@ -219,12 +219,12 @@ class AddrMap:
       if (i.access == Access.WAR0):
         output += "          o_resp.rdata[{}:0]     = '0; //{}\n".format(i.width - 1, i.name)
       else:
-      if type(i.width) is str:
-        output += "          o_resp.rdata[{}-1:0]     = i_{}[{}][{}-1:0];\n".format(i.width, i.name, j, i.width)
-      else:
-        output += "          o_resp.rdata[{}:0]     = i_{}[{}][{}:0];\n".format(i.width - 1, i.name, j, i.width - 1)
+        if type(i.width) is str:
+          output += "          o_resp.rdata[{}-1:0]     = i_{}[{}][{}-1:0];\n".format(i.width, i.name, j, i.width)
+        else:
+          output += "          o_resp.rdata[{}:0]     = i_{}[{}][{}:0];\n".format(i.width - 1, i.name, j, i.width - 1)
       if (i.access != Access.WAR0):
-      output += "          o_{}_re[{}]      = 1'b1;\n".format(i.name, j)
+        output += "          o_{}_re[{}]      = 1'b1;\n".format(i.name, j)
       output += "        end\n"
       j += 1
       last_name = i.name
