@@ -156,10 +156,24 @@ class AddrMap:
             output += "  output logic [{}-1:0]          o_{}_we,\n".format(i[1], i[0])
             output += "  output logic [{}-1:0]          o_{}_re,\n".format(i[1], i[0])
           case 3: #SOURCES_ENTRY
-            output += "  input  logic [{}:0][{}:0]    i_{},\n".format(i[1], i[2]-1, i[0])
-            output += "  output logic [{}:0][{}:0]    o_{},\n".format(i[1], i[2]-1, i[0])
+            output += "  input  logic [{}:0][{}:0]      i_{},\n".format(i[1], i[2]-1, i[0])
+            output += "  output logic [{}:0][{}:0]      o_{},\n".format(i[1], i[2]-1, i[0])
             output += "  output logic [{}:0]            o_{}_we,\n".format(i[1], i[0])
             output += "  output logic [{}:0]            o_{}_re,\n".format(i[1], i[0])
+      elif i[3] == Access.WAR0:
+        match i[4]:
+          case 0: #NORMAL_ENTRY
+            output += "  output logic [{}:0][{}:0]      o_{},\n".format(i[1]-1, i[2]-1, i[0])
+            output += "  output logic [{}:0]            o_{}_we,\n".format(i[1]-1, i[0])
+          case 1: #REG_MACRO_ENTRY
+            output += "  output logic [{}-1:0][{}:0]    o_{},\n".format(i[1], i[2]-1, i[0])
+            output += "  output logic [{}-1:0]          o_{}_we,\n".format(i[1], i[0])
+          case 2: #REG_BIT_W_MACRO_ENTRY
+            output += "  output logic [{}-1:0][{}-1:0]  o_{},\n".format(i[1], i[2], i[0])
+            output += "  output logic [{}-1:0]          o_{}_we,\n".format(i[1], i[0])
+          case 3: #SOURCES_ENTRY
+            output += "  output logic [{}:0][{}:0]      o_{},\n".format(i[1], i[2]-1, i[0])
+            output += "  output logic [{}:0]            o_{}_we,\n".format(i[1], i[0])
 
     output += "  // Bus Interface\n"
     output += "  input  reg_intf::reg_intf_req_a32_d32 i_req,\n"
