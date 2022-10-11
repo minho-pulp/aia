@@ -252,43 +252,45 @@ class AddrMap:
       output += "   output logic [NR_IDCs-1:0]              o_seip_targets\n"
     output += ");\n"
 
+    ######################################
+    #      Generate register map reg     #
+    ######################################
     for i in self.ports:
       output += "\n// Register {}\n".format(i[0]) 
       if i[3] == Access.RO:
         match i[4]:
           case 0:
-            output += "logic [{}:0][{}:0]       {}_qi;\n".format(i[1]-1, i[2]-1, i[0])
+            output += "logic [{}:0][{}:0]       {}_qi, {}_di;\n".format(i[1]-1, i[2]-1, i[0], i[0])
             output += "logic [{}:0]             {}_re;\n".format(i[1]-1, i[0])
           case 1:
-            output += "logic [{}-1:0][{}:0]     {}_qi;\n".format(i[1], i[2]-1, i[0])
+            output += "logic [{}-1:0][{}:0]     {}_qi, {}_di;\n".format(i[1], i[2]-1, i[0], i[0])
             output += "logic [{}-1:0]           {}_re;\n".format(i[1], i[0])
           case 2:
-            output += "logic [{}-1:0][{}-1:0]   {}_qi;\n".format(i[1], i[2], i[0])
+            output += "logic [{}-1:0][{}-1:0]   {}_qi, {}_di;\n".format(i[1], i[2], i[0], i[0])
             output += "logic [{}-1:0]           {}_re;\n".format(i[1], i[0])
           case 3:
-            output += "logic [{}:0][{}:0]     {}_qi;\n".format(i[1], i[2]-1, i[0])
+            output += "logic [{}:0][{}:0]       {}_qi, {}_di;\n".format(i[1], i[2]-1, i[0], i[0])
             output += "logic [{}:0]             {}_re;\n".format(i[1], i[0])
-
       elif i[3] == Access.RW:
         match i[4]:
           case 0:
-            output += "logic [{}:0][{}:0]       {}_qi;\n".format(i[1]-1, i[2]-1, i[0])
-            output += "logic [{}:0][{}:0]       {}_qo;\n".format(i[1]-1, i[2]-1, i[0])
+            output += "logic [{}:0][{}:0]       {}_qi, {}_di;\n".format(i[1]-1, i[2]-1, i[0], i[0])
+            output += "logic [{}:0][{}:0]       {}_o;\n".format(i[1]-1, i[2]-1, i[0])
             output += "logic [{}:0]             {}_we;\n".format(i[1]-1, i[0])
             output += "logic [{}:0]             {}_re;\n".format(i[1]-1, i[0])
           case 1:
-            output += "logic [{}-1:0][{}:0]     {}_qi;\n".format(i[1], i[2]-1, i[0])
-            output += "logic [{}-1:0][{}:0]     {}_qo;\n".format(i[1], i[2]-1, i[0])
+            output += "logic [{}-1:0][{}:0]     {}_qi, {}_di;\n".format(i[1], i[2]-1, i[0], i[0])
+            output += "logic [{}-1:0][{}:0]     {}_o;\n".format(i[1], i[2]-1, i[0])
             output += "logic [{}-1:0]           {}_we;\n".format(i[1], i[0])
             output += "logic [{}-1:0]           {}_re;\n".format(i[1], i[0])
           case 2:
-            output += "logic [{}-1:0][{}-1:0]   {}_qi;\n".format(i[1], i[2], i[0])
-            output += "logic [{}-1:0][{}-1:0]   {}_qo;\n".format(i[1], i[2], i[0])
+            output += "logic [{}-1:0][{}-1:0]   {}_qi, {}_di;\n".format(i[1], i[2], i[0], i[0])
+            output += "logic [{}-1:0][{}-1:0]   {}_o;\n".format(i[1], i[2], i[0])
             output += "logic [{}-1:0]           {}_we;\n".format(i[1], i[0])
             output += "logic [{}-1:0]           {}_re;\n".format(i[1], i[0])
           case 3:
-            output += "logic [{}:0][{}-1:0]     {}_qi;\n".format(i[1], i[2]-1, i[0])
-            output += "logic [{}:0][{}-1:0]     {}_qo;\n".format(i[1], i[2]-1, i[0])
+            output += "logic [{}:0][{}-1:0]     {}_qi, {}_di;\n".format(i[1], i[2]-1, i[0], i[0])
+            output += "logic [{}:0][{}-1:0]     {}_o;\n".format(i[1], i[2]-1, i[0])
             output += "logic [{}:0]             {}_we;\n".format(i[1], i[0])
             output += "logic [{}:0]             {}_re;\n".format(i[1], i[0])
       elif i[3] == Access.WAR0:
@@ -306,12 +308,15 @@ class AddrMap:
             output += "logic [{}:0][{}-1:0]     {}_o;\n".format(i[1], i[2]-1, i[0])
             output += "logic [{}:0]             {}_we;\n".format(i[1], i[0])
 
+    ######################################
+    #      Instantiate register map      #
+    ######################################
     output += "\n"+regmap_name+" #(\n"
     output += "   .DOMAIN_ADDR(DOMAIN_ADDR),\n"
     output += "   .NR_SRC(NR_SRC),\n"
     output += "   .MIN_PRIO(MIN_PRIO),\n"
     output += "   .IPRIOLEN(IPRIOLEN),\n"
-    output += "   .NR_IDCs(NR_IDCs),\n"
+    output += "   .NR_IDCs(NR_IDCs)\n"
     output += ") i_"+regmap_name+" (\n"
     for i in self.ports:
       output += "   // Register: {}\n".format(i[0])
@@ -320,10 +325,30 @@ class AddrMap:
         output += "   .o_{}_re({}_re),\n".format(i[0], i[0])
       elif i[3] == Access.RW:
         output += "   .i_{}({}_qi),\n".format(i[0], i[0])
-        output += "   .o_{}({}_qo),\n".format(i[0], i[0])
+        output += "   .o_{}({}_o),\n".format(i[0], i[0])
         output += "   .o_{}_we({}_we),\n".format(i[0], i[0])
         output += "   .o_{}_re({}_re),\n".format(i[0], i[0])
+      elif i[3] == Access.WAR0:
+        output += "   .o_{}({}_o),\n".format(i[0], i[0])
+        output += "   .o_{}_we({}_we),\n".format(i[0], i[0])
     output += "); // End of Regmap instance\n\n"
+
+    output += "/** Registers sequential logic */\n"
+    output += "always_ff @( posedge i_clk or negedge ni_rst ) begin\n"
+    output += "   if (!ni_rst) begin\n"
+    for i in self.ports:
+      if i[3] == Access.RO:
+          output += "     {}_qi <= '0;\n".format(i[0])
+      elif i[3] == Access.RW:
+          output += "     {}_qi <= '0;\n".format(i[0])
+    output += "   end else begin\n"
+    for i in self.ports:
+      if i[3] == Access.RO:
+          output += "     {}_qi <= {}_di;\n".format(i[0], i[0])
+      elif i[3] == Access.RW:
+          output += "     {}_qi <= {}_di;\n".format(i[0], i[0])
+    output += "   end\n"
+    output += "end\n"
     output += "endmodule\n"
     return output
 
