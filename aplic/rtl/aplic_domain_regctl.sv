@@ -29,9 +29,7 @@ module aplic_domain_regctl #(
     output  logic [NR_REG:0][NR_BITS_SRC-1:0]           o_sugg_setip,
     output  logic                                       o_domaincfgDM,
     output  logic [NR_REG:0][NR_BITS_SRC-1:0]           o_active,
-    output  logic [NR_REG:0][NR_BITS_SRC-1:0]           o_claimed,
-    output  logic [NR_REG:0][NR_BITS_SRC-1:0]           o_forwarded,
-    output  logic [NR_REG:0][NR_BITS_SRC-1:0]           o_succ_w_clr,
+    output  logic [NR_REG:0][NR_BITS_SRC-1:0]           o_claimed_forwarded,
     input   logic [NR_REG:0][NR_BITS_SRC-1:0]           i_intp_pen,
     input   logic [NR_REG:0][NR_BITS_SRC-1:0]           i_rectified_src,
     /** Notifier */
@@ -309,6 +307,7 @@ always_ff @( posedge i_clk or negedge ni_rst ) begin
      topi_qi <= '0;
      claimi_qi <= '0;
    end else begin
+     claimed_forwarded_qi <= claimed_forwarded_di;
      domaincfg_qi <= domaincfg_di;
      sourcecfg_qi <= sourcecfg_di;
      mmsiaddrcfg_qi <= mmsiaddrcfg_di;

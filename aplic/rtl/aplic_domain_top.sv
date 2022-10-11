@@ -30,9 +30,7 @@ logic [NR_SRC-1:0][10:0]                    sourcecfg_i;
 logic [NR_REG:0][NR_BITS_SRC-1:0]           sugg_setip_i;
 logic                                       domaincfgDM_i;
 logic [NR_REG:0][NR_BITS_SRC-1:0]           active_i;
-logic [NR_REG:0][NR_BITS_SRC-1:0]           claimed_i;
-logic [NR_REG:0][NR_BITS_SRC-1:0]           forwarded_i;
-logic [NR_REG:0][NR_BITS_SRC-1:0]           succ_w_clr_i;
+logic [NR_REG:0][NR_BITS_SRC-1:0]           claimed_forwarded_i;
 logic [NR_REG:0][NR_BITS_SRC-1:0]           intp_pen_i;
 logic [NR_REG:0][NR_BITS_SRC-1:0]           rectified_src_i;
 /** Notifier */
@@ -60,9 +58,7 @@ aplic_domain_gateway #(
    .i_sugg_setip(sugg_setip_i),
    .i_domaincfgDM(domaincfgDM_i), 
    .i_active(active_i), 
-   .i_claimed(claimed_i), 
-   .i_forwarded(forwarded_i), 
-   .i_succ_w_clr(succ_w_clr_i), 
+   .i_claimed(claimed_forwarded_i), 
    .o_intp_pen(intp_pen_i), 
    .o_rectified_src(rectified_src_i) 
 ); // End of gateway instance
@@ -111,9 +107,7 @@ aplic_domain_regctl #(
    .o_sugg_setip(sugg_setip_i),
    .o_domaincfgDM(domaincfgDM_i),
    .o_active(active_i),
-   .o_claimed(claimed_i),
-   .o_forwarded(forwarded_i),
-   .o_succ_w_clr(succ_w_clr_i),
+   .o_claimed(claimed_forwarded_i),
    .i_intp_pen(intp_pen_i),
    .i_rectified_src(rectified_src_i),
    /** Notifier */
