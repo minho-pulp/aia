@@ -46,6 +46,10 @@ module aplic_domain_regctl #(
         /**  interface for direct mode */
 );
 
+/** Internal Signals definition */
+logic [NR_REG:0][NR_BITS_SRC-1:0]        active_qi              , active_di;
+logic [NR_REG:0][NR_BITS_SRC-1:0]        claimed_forwarded_qi   , claimed_forwarded_di;
+
 /** Register Map instantiation */
 
 // Register domaincfg
@@ -283,11 +287,24 @@ aplic_regmap #(
 ); // End of Regmap instance
 
 /** Registers combinational logic */
+// Determines which interrupts are active
+always_comb begin 
+    for (int i = 0; i < NR_SRC; i++) begin
+        if((sourcecfg_qi[i][10] == 1) || 
+          ((sourcecfg_qi[i][10] == 0) && (sourcecfg_qi[2:0] == 3'b000))) begin
+              active_di[i/32][i%32] = 1'b1;
+          end else begin
+            active_di[i/32][i%32] = 1'b0; 
+          end
+    end
+end
 
 
 /** Registers sequential logic */
 always_ff @( posedge i_clk or negedge ni_rst ) begin
    if (!ni_rst) begin
+     active_qi <= '0;
+     claimed_forwarded_qi <= '0;
      domaincfg_qi <= '0;
      sourcecfg_qi <= '0;
      mmsiaddrcfg_qi <= '0;
@@ -307,6 +324,7 @@ always_ff @( posedge i_clk or negedge ni_rst ) begin
      topi_qi <= '0;
      claimi_qi <= '0;
    end else begin
+     active_qi <= active_di;
      claimed_forwarded_qi <= claimed_forwarded_di;
      domaincfg_qi <= domaincfg_di;
      sourcecfg_qi <= sourcecfg_di;
