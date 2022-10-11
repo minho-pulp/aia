@@ -1,4 +1,12 @@
-// Do not edit - auto-generated
+/** 
+*   Name: APLIC domain register map (generic)
+*   Date: 2022-10-11 19:10:48.040152
+*   Author: F.Marques <fmarques_00@protonmail.com>
+* 
+*   Description: This module is a generic APLIC domain register map.
+*                For a given domain unused registers should be unconnected.
+*   Disclaimer:  This file was automatically generated. Edit at your own risk.
+*/ 
 module aplic_regmap #(
    parameter int                       DOMAIN_ADDR = 32'hc000000,
    parameter int                       NR_SRC      = 30,
@@ -12,8 +20,8 @@ module aplic_regmap #(
   output logic [0:0]            o_domaincfg_we,
   output logic [0:0]            o_domaincfg_re,
   // Register: sourcecfg
-  input  logic [NR_SRC:0][10:0]    i_sourcecfg,
-  output logic [NR_SRC:0][10:0]    o_sourcecfg,
+  input  logic [NR_SRC:0][10:0]      i_sourcecfg,
+  output logic [NR_SRC:0][10:0]      o_sourcecfg,
   output logic [NR_SRC:0]            o_sourcecfg_we,
   output logic [NR_SRC:0]            o_sourcecfg_re,
   // Register: mmsiaddrcfg
@@ -42,40 +50,30 @@ module aplic_regmap #(
   output logic [0:0]            o_setip_we,
   output logic [0:0]            o_setip_re,
   // Register: setipnum
-  input  logic [0:0][31:0]      i_setipnum,
   output logic [0:0][31:0]      o_setipnum,
   output logic [0:0]            o_setipnum_we,
-  output logic [0:0]            o_setipnum_re,
   // Register: in_clrip
   input  logic [0:0][31:0]      i_in_clrip,
   output logic [0:0][31:0]      o_in_clrip,
   output logic [0:0]            o_in_clrip_we,
   output logic [0:0]            o_in_clrip_re,
   // Register: clripnum
-  input  logic [0:0][31:0]      i_clripnum,
   output logic [0:0][31:0]      o_clripnum,
   output logic [0:0]            o_clripnum_we,
-  output logic [0:0]            o_clripnum_re,
   // Register: setie
   input  logic [0:0][31:0]      i_setie,
   output logic [0:0][31:0]      o_setie,
   output logic [0:0]            o_setie_we,
   output logic [0:0]            o_setie_re,
   // Register: setienum
-  input  logic [0:0][31:0]      i_setienum,
   output logic [0:0][31:0]      o_setienum,
   output logic [0:0]            o_setienum_we,
-  output logic [0:0]            o_setienum_re,
   // Register: clrie
-  input  logic [0:0][31:0]      i_clrie,
   output logic [0:0][31:0]      o_clrie,
   output logic [0:0]            o_clrie_we,
-  output logic [0:0]            o_clrie_re,
   // Register: clrienum
-  input  logic [0:0][31:0]      i_clrienum,
   output logic [0:0][31:0]      o_clrienum,
   output logic [0:0]            o_clrienum_we,
-  output logic [0:0]            o_clrienum_re,
   // Register: setipnum_le
   input  logic [0:0][31:0]      i_setipnum_le,
   output logic [0:0][31:0]      o_setipnum_le,
@@ -92,8 +90,8 @@ module aplic_regmap #(
   output logic [0:0]            o_genmsi_we,
   output logic [0:0]            o_genmsi_re,
   // Register: target
-  input  logic [NR_SRC:0][31:0]    i_target,
-  output logic [NR_SRC:0][31:0]    o_target,
+  input  logic [NR_SRC:0][31:0]      i_target,
+  output logic [NR_SRC:0][31:0]      o_target,
   output logic [NR_SRC:0]            o_target_we,
   output logic [NR_SRC:0]            o_target_re,
   // Register: idelivery
@@ -531,355 +529,350 @@ always_comb begin
       endcase
     end else begin
       unique case(i_req.addr)
-         DOMAIN_ADDR + 32'h0: begin
+        DOMAIN_ADDR + 32'h0: begin
           o_resp.rdata[31:0]     = i_domaincfg[0][31:0];
           o_domaincfg_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h4: begin
+        DOMAIN_ADDR + 32'h4: begin
           o_resp.rdata[10:0]     = i_sourcecfg[0][10:0];
           o_sourcecfg_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h8: begin
+        DOMAIN_ADDR + 32'h8: begin
           o_resp.rdata[10:0]     = i_sourcecfg[1][10:0];
           o_sourcecfg_re[1]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'hc: begin
+        DOMAIN_ADDR + 32'hc: begin
           o_resp.rdata[10:0]     = i_sourcecfg[2][10:0];
           o_sourcecfg_re[2]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h10: begin
+        DOMAIN_ADDR + 32'h10: begin
           o_resp.rdata[10:0]     = i_sourcecfg[3][10:0];
           o_sourcecfg_re[3]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h14: begin
+        DOMAIN_ADDR + 32'h14: begin
           o_resp.rdata[10:0]     = i_sourcecfg[4][10:0];
           o_sourcecfg_re[4]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h18: begin
+        DOMAIN_ADDR + 32'h18: begin
           o_resp.rdata[10:0]     = i_sourcecfg[5][10:0];
           o_sourcecfg_re[5]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h1c: begin
+        DOMAIN_ADDR + 32'h1c: begin
           o_resp.rdata[10:0]     = i_sourcecfg[6][10:0];
           o_sourcecfg_re[6]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h20: begin
+        DOMAIN_ADDR + 32'h20: begin
           o_resp.rdata[10:0]     = i_sourcecfg[7][10:0];
           o_sourcecfg_re[7]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h24: begin
+        DOMAIN_ADDR + 32'h24: begin
           o_resp.rdata[10:0]     = i_sourcecfg[8][10:0];
           o_sourcecfg_re[8]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h28: begin
+        DOMAIN_ADDR + 32'h28: begin
           o_resp.rdata[10:0]     = i_sourcecfg[9][10:0];
           o_sourcecfg_re[9]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h2c: begin
+        DOMAIN_ADDR + 32'h2c: begin
           o_resp.rdata[10:0]     = i_sourcecfg[10][10:0];
           o_sourcecfg_re[10]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h30: begin
+        DOMAIN_ADDR + 32'h30: begin
           o_resp.rdata[10:0]     = i_sourcecfg[11][10:0];
           o_sourcecfg_re[11]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h34: begin
+        DOMAIN_ADDR + 32'h34: begin
           o_resp.rdata[10:0]     = i_sourcecfg[12][10:0];
           o_sourcecfg_re[12]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h38: begin
+        DOMAIN_ADDR + 32'h38: begin
           o_resp.rdata[10:0]     = i_sourcecfg[13][10:0];
           o_sourcecfg_re[13]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3c: begin
+        DOMAIN_ADDR + 32'h3c: begin
           o_resp.rdata[10:0]     = i_sourcecfg[14][10:0];
           o_sourcecfg_re[14]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h40: begin
+        DOMAIN_ADDR + 32'h40: begin
           o_resp.rdata[10:0]     = i_sourcecfg[15][10:0];
           o_sourcecfg_re[15]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h44: begin
+        DOMAIN_ADDR + 32'h44: begin
           o_resp.rdata[10:0]     = i_sourcecfg[16][10:0];
           o_sourcecfg_re[16]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h48: begin
+        DOMAIN_ADDR + 32'h48: begin
           o_resp.rdata[10:0]     = i_sourcecfg[17][10:0];
           o_sourcecfg_re[17]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h4c: begin
+        DOMAIN_ADDR + 32'h4c: begin
           o_resp.rdata[10:0]     = i_sourcecfg[18][10:0];
           o_sourcecfg_re[18]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h50: begin
+        DOMAIN_ADDR + 32'h50: begin
           o_resp.rdata[10:0]     = i_sourcecfg[19][10:0];
           o_sourcecfg_re[19]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h54: begin
+        DOMAIN_ADDR + 32'h54: begin
           o_resp.rdata[10:0]     = i_sourcecfg[20][10:0];
           o_sourcecfg_re[20]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h58: begin
+        DOMAIN_ADDR + 32'h58: begin
           o_resp.rdata[10:0]     = i_sourcecfg[21][10:0];
           o_sourcecfg_re[21]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h5c: begin
+        DOMAIN_ADDR + 32'h5c: begin
           o_resp.rdata[10:0]     = i_sourcecfg[22][10:0];
           o_sourcecfg_re[22]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h60: begin
+        DOMAIN_ADDR + 32'h60: begin
           o_resp.rdata[10:0]     = i_sourcecfg[23][10:0];
           o_sourcecfg_re[23]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h64: begin
+        DOMAIN_ADDR + 32'h64: begin
           o_resp.rdata[10:0]     = i_sourcecfg[24][10:0];
           o_sourcecfg_re[24]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h68: begin
+        DOMAIN_ADDR + 32'h68: begin
           o_resp.rdata[10:0]     = i_sourcecfg[25][10:0];
           o_sourcecfg_re[25]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h6c: begin
+        DOMAIN_ADDR + 32'h6c: begin
           o_resp.rdata[10:0]     = i_sourcecfg[26][10:0];
           o_sourcecfg_re[26]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h70: begin
+        DOMAIN_ADDR + 32'h70: begin
           o_resp.rdata[10:0]     = i_sourcecfg[27][10:0];
           o_sourcecfg_re[27]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h74: begin
+        DOMAIN_ADDR + 32'h74: begin
           o_resp.rdata[10:0]     = i_sourcecfg[28][10:0];
           o_sourcecfg_re[28]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h78: begin
+        DOMAIN_ADDR + 32'h78: begin
           o_resp.rdata[10:0]     = i_sourcecfg[29][10:0];
           o_sourcecfg_re[29]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h7c: begin
+        DOMAIN_ADDR + 32'h7c: begin
           o_resp.rdata[10:0]     = i_sourcecfg[30][10:0];
           o_sourcecfg_re[30]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h1bc0: begin
+        DOMAIN_ADDR + 32'h1bc0: begin
           o_resp.rdata[31:0]     = i_mmsiaddrcfg[0][31:0];
           o_mmsiaddrcfg_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h1bc4: begin
+        DOMAIN_ADDR + 32'h1bc4: begin
           o_resp.rdata[31:0]     = i_mmsiaddrcfgh[0][31:0];
           o_mmsiaddrcfgh_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h1bc8: begin
+        DOMAIN_ADDR + 32'h1bc8: begin
           o_resp.rdata[31:0]     = i_smsiaddrcfg[0][31:0];
           o_smsiaddrcfg_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h1bcc: begin
+        DOMAIN_ADDR + 32'h1bcc: begin
           o_resp.rdata[31:0]     = i_smsiaddrcfgh[0][31:0];
           o_smsiaddrcfgh_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h1c00: begin
+        DOMAIN_ADDR + 32'h1c00: begin
           o_resp.rdata[31:0]     = i_setip[0][31:0];
           o_setip_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h1cdc: begin
-          o_resp.rdata[31:0]     = i_setipnum[0][31:0];
-          o_setipnum_re[0]      = 1'b1;
+        DOMAIN_ADDR + 32'h1cdc: begin
+          o_resp.rdata[31:0]     = '0; //setipnum
         end
-         DOMAIN_ADDR + 32'h1d00: begin
+        DOMAIN_ADDR + 32'h1d00: begin
           o_resp.rdata[31:0]     = i_in_clrip[0][31:0];
           o_in_clrip_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h1ddc: begin
-          o_resp.rdata[31:0]     = i_clripnum[0][31:0];
-          o_clripnum_re[0]      = 1'b1;
+        DOMAIN_ADDR + 32'h1ddc: begin
+          o_resp.rdata[31:0]     = '0; //clripnum
         end
-         DOMAIN_ADDR + 32'h1e00: begin
+        DOMAIN_ADDR + 32'h1e00: begin
           o_resp.rdata[31:0]     = i_setie[0][31:0];
           o_setie_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h1edc: begin
-          o_resp.rdata[31:0]     = i_setienum[0][31:0];
-          o_setienum_re[0]      = 1'b1;
+        DOMAIN_ADDR + 32'h1edc: begin
+          o_resp.rdata[31:0]     = '0; //setienum
         end
-         DOMAIN_ADDR + 32'h1f00: begin
-          o_resp.rdata[31:0]     = i_clrie[0][31:0];
-          o_clrie_re[0]      = 1'b1;
+        DOMAIN_ADDR + 32'h1f00: begin
+          o_resp.rdata[31:0]     = '0; //clrie
         end
-         DOMAIN_ADDR + 32'h1fdc: begin
-          o_resp.rdata[31:0]     = i_clrienum[0][31:0];
-          o_clrienum_re[0]      = 1'b1;
+        DOMAIN_ADDR + 32'h1fdc: begin
+          o_resp.rdata[31:0]     = '0; //clrienum
         end
-         DOMAIN_ADDR + 32'h2000: begin
+        DOMAIN_ADDR + 32'h2000: begin
           o_resp.rdata[31:0]     = i_setipnum_le[0][31:0];
           o_setipnum_le_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h2004: begin
+        DOMAIN_ADDR + 32'h2004: begin
           o_resp.rdata[31:0]     = i_setipnum_be[0][31:0];
           o_setipnum_be_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3000: begin
+        DOMAIN_ADDR + 32'h3000: begin
           o_resp.rdata[31:0]     = i_genmsi[0][31:0];
           o_genmsi_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3004: begin
+        DOMAIN_ADDR + 32'h3004: begin
           o_resp.rdata[31:0]     = i_target[0][31:0];
           o_target_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3008: begin
+        DOMAIN_ADDR + 32'h3008: begin
           o_resp.rdata[31:0]     = i_target[1][31:0];
           o_target_re[1]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h300c: begin
+        DOMAIN_ADDR + 32'h300c: begin
           o_resp.rdata[31:0]     = i_target[2][31:0];
           o_target_re[2]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3010: begin
+        DOMAIN_ADDR + 32'h3010: begin
           o_resp.rdata[31:0]     = i_target[3][31:0];
           o_target_re[3]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3014: begin
+        DOMAIN_ADDR + 32'h3014: begin
           o_resp.rdata[31:0]     = i_target[4][31:0];
           o_target_re[4]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3018: begin
+        DOMAIN_ADDR + 32'h3018: begin
           o_resp.rdata[31:0]     = i_target[5][31:0];
           o_target_re[5]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h301c: begin
+        DOMAIN_ADDR + 32'h301c: begin
           o_resp.rdata[31:0]     = i_target[6][31:0];
           o_target_re[6]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3020: begin
+        DOMAIN_ADDR + 32'h3020: begin
           o_resp.rdata[31:0]     = i_target[7][31:0];
           o_target_re[7]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3024: begin
+        DOMAIN_ADDR + 32'h3024: begin
           o_resp.rdata[31:0]     = i_target[8][31:0];
           o_target_re[8]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3028: begin
+        DOMAIN_ADDR + 32'h3028: begin
           o_resp.rdata[31:0]     = i_target[9][31:0];
           o_target_re[9]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h302c: begin
+        DOMAIN_ADDR + 32'h302c: begin
           o_resp.rdata[31:0]     = i_target[10][31:0];
           o_target_re[10]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3030: begin
+        DOMAIN_ADDR + 32'h3030: begin
           o_resp.rdata[31:0]     = i_target[11][31:0];
           o_target_re[11]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3034: begin
+        DOMAIN_ADDR + 32'h3034: begin
           o_resp.rdata[31:0]     = i_target[12][31:0];
           o_target_re[12]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3038: begin
+        DOMAIN_ADDR + 32'h3038: begin
           o_resp.rdata[31:0]     = i_target[13][31:0];
           o_target_re[13]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h303c: begin
+        DOMAIN_ADDR + 32'h303c: begin
           o_resp.rdata[31:0]     = i_target[14][31:0];
           o_target_re[14]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3040: begin
+        DOMAIN_ADDR + 32'h3040: begin
           o_resp.rdata[31:0]     = i_target[15][31:0];
           o_target_re[15]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3044: begin
+        DOMAIN_ADDR + 32'h3044: begin
           o_resp.rdata[31:0]     = i_target[16][31:0];
           o_target_re[16]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3048: begin
+        DOMAIN_ADDR + 32'h3048: begin
           o_resp.rdata[31:0]     = i_target[17][31:0];
           o_target_re[17]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h304c: begin
+        DOMAIN_ADDR + 32'h304c: begin
           o_resp.rdata[31:0]     = i_target[18][31:0];
           o_target_re[18]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3050: begin
+        DOMAIN_ADDR + 32'h3050: begin
           o_resp.rdata[31:0]     = i_target[19][31:0];
           o_target_re[19]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3054: begin
+        DOMAIN_ADDR + 32'h3054: begin
           o_resp.rdata[31:0]     = i_target[20][31:0];
           o_target_re[20]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3058: begin
+        DOMAIN_ADDR + 32'h3058: begin
           o_resp.rdata[31:0]     = i_target[21][31:0];
           o_target_re[21]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h305c: begin
+        DOMAIN_ADDR + 32'h305c: begin
           o_resp.rdata[31:0]     = i_target[22][31:0];
           o_target_re[22]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3060: begin
+        DOMAIN_ADDR + 32'h3060: begin
           o_resp.rdata[31:0]     = i_target[23][31:0];
           o_target_re[23]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3064: begin
+        DOMAIN_ADDR + 32'h3064: begin
           o_resp.rdata[31:0]     = i_target[24][31:0];
           o_target_re[24]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3068: begin
+        DOMAIN_ADDR + 32'h3068: begin
           o_resp.rdata[31:0]     = i_target[25][31:0];
           o_target_re[25]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h306c: begin
+        DOMAIN_ADDR + 32'h306c: begin
           o_resp.rdata[31:0]     = i_target[26][31:0];
           o_target_re[26]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3070: begin
+        DOMAIN_ADDR + 32'h3070: begin
           o_resp.rdata[31:0]     = i_target[27][31:0];
           o_target_re[27]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3074: begin
+        DOMAIN_ADDR + 32'h3074: begin
           o_resp.rdata[31:0]     = i_target[28][31:0];
           o_target_re[28]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h3078: begin
+        DOMAIN_ADDR + 32'h3078: begin
           o_resp.rdata[31:0]     = i_target[29][31:0];
           o_target_re[29]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h307c: begin
+        DOMAIN_ADDR + 32'h307c: begin
           o_resp.rdata[31:0]     = i_target[30][31:0];
           o_target_re[30]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h4000: begin
+        DOMAIN_ADDR + 32'h4000: begin
           o_resp.rdata[0:0]     = i_idelivery[0][0:0];
           o_idelivery_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h4020: begin
+        DOMAIN_ADDR + 32'h4020: begin
           o_resp.rdata[0:0]     = i_idelivery[1][0:0];
           o_idelivery_re[1]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h4004: begin
+        DOMAIN_ADDR + 32'h4004: begin
           o_resp.rdata[0:0]     = i_iforce[0][0:0];
           o_iforce_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h4024: begin
+        DOMAIN_ADDR + 32'h4024: begin
           o_resp.rdata[0:0]     = i_iforce[1][0:0];
           o_iforce_re[1]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h4008: begin
+        DOMAIN_ADDR + 32'h4008: begin
           o_resp.rdata[IPRIOLEN-1:0]     = i_ithreshold[0][IPRIOLEN-1:0];
           o_ithreshold_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h4028: begin
+        DOMAIN_ADDR + 32'h4028: begin
           o_resp.rdata[IPRIOLEN-1:0]     = i_ithreshold[1][IPRIOLEN-1:0];
           o_ithreshold_re[1]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h4018: begin
+        DOMAIN_ADDR + 32'h4018: begin
           o_resp.rdata[25:0]     = i_topi[0][25:0];
           o_topi_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h4038: begin
+        DOMAIN_ADDR + 32'h4038: begin
           o_resp.rdata[25:0]     = i_topi[1][25:0];
           o_topi_re[1]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h401c: begin
+        DOMAIN_ADDR + 32'h401c: begin
           o_resp.rdata[25:0]     = i_claimi[0][25:0];
           o_claimi_re[0]      = 1'b1;
         end
-         DOMAIN_ADDR + 32'h403c: begin
+        DOMAIN_ADDR + 32'h403c: begin
           o_resp.rdata[25:0]     = i_claimi[1][25:0];
           o_claimi_re[1]      = 1'b1;
         end
