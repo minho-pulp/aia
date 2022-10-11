@@ -10,6 +10,7 @@ from enum import Enum
 from fileinput import filename
 from math import ceil, log
 import os.path
+import datetime
 
 
 NORMAL_ENTRY          = 0
@@ -104,7 +105,15 @@ class AddrMap:
 
   """Dump Verilog for Register Map"""
   def dumpRegmap(self):
-    output = "// Do not edit - auto-generated\n"
+    output = "/** \n"
+    output += "*   Name: APLIC domain register map (generic)\n"
+    output += "*   Date: {}\n".format(str(datetime.datetime.now()))
+    output += "*   Author: F.Marques <fmarques_00@protonmail.com>\n"
+    output += "* \n"
+    output += "*   Description: This module is a generic APLIC domain register map.\n"
+    output += "*                For a given domain unused registers should be unconnected.\n"
+    output += "*   Disclaimer:  This file was automatically generated. Edit at your own risk.\n"
+    output += "*/ \n"
     output += "module {} #(\n".format(regmap_name)
     output += "   parameter int                       DOMAIN_ADDR = 32'h{},\n".format(hex(addr)[2:])
     output += "   parameter int                       NR_SRC      = {},\n".format(nr_src)
@@ -127,7 +136,7 @@ class AddrMap:
             output += "  input  logic [{}-1:0][{}-1:0]  i_{},\n".format(i[1], i[2], i[0])
             output += "  output logic [{}-1:0]          o_{}_re,\n".format(i[1], i[0])
           case 3: #SOURCES_ENTRY
-            output += "  input  logic [{}:0][{}:0]    i_{},\n".format(i[1], i[2]-1, i[0])
+            output += "  input  logic [{}:0][{}:0]      i_{},\n".format(i[1], i[2]-1, i[0])
             output += "  output logic [{}:0]            o_{}_re,\n".format(i[1], i[0])
       elif i[3] == Access.RW:
         match i[4]:
@@ -215,7 +224,15 @@ class AddrMap:
 
   """Dump Interface to APLIC Domain"""
   def dumpAplicDomain(self):
-    output = "//\n"
+    output = "/** \n"
+    output += "*   Name: APLIC domain top module\n"
+    output += "*   Date: {}\n".format(str(datetime.datetime.now()))
+    output += "*   Author: F.Marques <fmarques_00@protonmail.com>\n"
+    output += "* \n"
+    output += "*   Description: This module is the APLIC domain.\n"
+    output += "*                It is comprised by 3 submodules: gatway, notifier and register map.\n"
+    output += "*   Disclaimer:  This file was automatically generated. Edit at your own risk.\n"
+    output += "*/ \n"
     output += "module " + file_top_name + " #(\n"
     output += "   parameter int                           DOMAIN_ADDR = 32'h{},\n".format(hex(addr)[2:])
     output += "   parameter int                           NR_SRC    = {},\n".format(nr_src)
