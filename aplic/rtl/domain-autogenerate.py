@@ -35,8 +35,9 @@ def clog2(x):
   return ceil(log(x, 2))
 
 class Access(Enum):
-  RO = 1
-  RW = 2
+  RO    = 1
+  RW    = 2
+  WAR0  = 3
 
 class AddrMapEntry(object):
 
@@ -191,11 +192,15 @@ class AddrMap:
     for i in self.addrmap:
       if last_name != i.name:
         j = 0
-      output += "         DOMAIN_ADDR + {}'h{}: begin\n".format(self.access_width, hex(i.addr - addr)[2:])
+      output += "        DOMAIN_ADDR + {}'h{}: begin\n".format(self.access_width, hex(i.addr - addr)[2:])
+      if (i.access == Access.WAR0):
+        output += "          o_resp.rdata[{}:0]     = '0; //{}\n".format(i.width - 1, i.name)
+      else:
       if type(i.width) is str:
         output += "          o_resp.rdata[{}-1:0]     = i_{}[{}][{}-1:0];\n".format(i.width, i.name, j, i.width)
       else:
         output += "          o_resp.rdata[{}:0]     = i_{}[{}][{}:0];\n".format(i.width - 1, i.name, j, i.width - 1)
+      if (i.access != Access.WAR0):
       output += "          o_{}_re[{}]      = 1'b1;\n".format(i.name, j)
       output += "        end\n"
       j += 1
@@ -269,6 +274,20 @@ class AddrMap:
             output += "logic [{}:0][{}-1:0]     {}_qo;\n".format(i[1], i[2]-1, i[0])
             output += "logic [{}:0]             {}_we;\n".format(i[1], i[0])
             output += "logic [{}:0]             {}_re;\n".format(i[1], i[0])
+      elif i[3] == Access.WAR0:
+        match i[4]:
+          case 0:
+            output += "logic [{}:0][{}:0]       {}_o;\n".format(i[1]-1, i[2]-1, i[0])
+            output += "logic [{}:0]             {}_we;\n".format(i[1]-1, i[0])
+          case 1:
+            output += "logic [{}-1:0][{}:0]     {}_o;\n".format(i[1], i[2]-1, i[0])
+            output += "logic [{}-1:0]           {}_we;\n".format(i[1], i[0])
+          case 2:
+            output += "logic [{}-1:0][{}-1:0]   {}_o;\n".format(i[1], i[2], i[0])
+            output += "logic [{}-1:0]           {}_we;\n".format(i[1], i[0])
+          case 3:
+            output += "logic [{}:0][{}-1:0]     {}_o;\n".format(i[1], i[2]-1, i[0])
+            output += "logic [{}:0]             {}_we;\n".format(i[1], i[0])
 
     output += "\n"+regmap_name+" #(\n"
     output += "   .DOMAIN_ADDR(DOMAIN_ADDR),\n"
@@ -513,7 +532,7 @@ if __name__ == "__main__":
       addrmap.addEntries(nr_setip+1, setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, REGISTER_DEF_SIZE32)
 
     # setipnum registers
-    addrmap.addEntry(setipnumAddr, aplic_base, mode + "setipnum", mode + "setipnum", Access.RW, REGISTER_DEF_SIZE32)
+    addrmap.addEntry(setipnumAddr, aplic_base, mode + "setipnum", mode + "setipnum", Access.WAR0, REGISTER_DEF_SIZE32)
 
     # ==========================================================================================
     # in_clrip registers: only exitent sources are implemented
@@ -527,7 +546,7 @@ if __name__ == "__main__":
       addrmap.addEntries(nr_in_clrip+1, in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, REGISTER_DEF_SIZE32)
 
     # clripnum registers
-    addrmap.addEntry(clripnumAddr, aplic_base, mode + "clripnum", mode + "clripnum", Access.RW, REGISTER_DEF_SIZE32)
+    addrmap.addEntry(clripnumAddr, aplic_base, mode + "clripnum", mode + "clripnum", Access.WAR0, REGISTER_DEF_SIZE32)
 
     # ==========================================================================================
     # setie registers: only exitent sources are implemented
@@ -541,7 +560,7 @@ if __name__ == "__main__":
       addrmap.addEntries(nr_setie+1, setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, REGISTER_DEF_SIZE32)
 
     # setienum registers
-    addrmap.addEntry(setienumAddr, aplic_base, mode + "setienum", mode + "setienum", Access.RW, REGISTER_DEF_SIZE32)
+    addrmap.addEntry(setienumAddr, aplic_base, mode + "setienum", mode + "setienum", Access.WAR0, REGISTER_DEF_SIZE32)
 
     # ==========================================================================================
     # clrie registers: only exitent sources are implemented
@@ -550,12 +569,12 @@ if __name__ == "__main__":
     nr_clrie = nr_reg_needed_for_interrupt
     if nr_clrie == 0:
       #addrmap.addEntry(clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.RW, nr_src_eff)
-      addrmap.addEntry(clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.RW, REGISTER_DEF_SIZE32)
+      addrmap.addEntry(clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.WAR0, REGISTER_DEF_SIZE32)
     elif nr_clrie >= 1:
-      addrmap.addEntries(nr_clrie+1, clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.RW, REGISTER_DEF_SIZE32)
+      addrmap.addEntries(nr_clrie+1, clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.WAR0, REGISTER_DEF_SIZE32)
 
     # clrienum registers
-    addrmap.addEntry(clrienumAddr, aplic_base, mode + "clrienum", mode + "clrienum", Access.RW, REGISTER_DEF_SIZE32)
+    addrmap.addEntry(clrienumAddr, aplic_base, mode + "clrienum", mode + "clrienum", Access.WAR0, REGISTER_DEF_SIZE32)
 
     # ==========================================================================================
 
