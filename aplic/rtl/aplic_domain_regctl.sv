@@ -19,11 +19,11 @@ module aplic_domain_regctl #(
     parameter int                                       NR_BITS_SRC = (NR_SRC > 31)? 32 : NR_SRC,
     parameter int                                       NR_REG = (NR_SRC-1)/32  
 ) (
-    input  logic                                        i_clk,
-    input  logic                                        ni_rst,
+    input   logic                                       i_clk,
+    input   logic                                       ni_rst,
     /** Register config: AXI interface From/To system bus */
-    input  reg_intf::reg_intf_req_a32_d32               i_req,
-    output reg_intf::reg_intf_resp_d32                  o_resp,
+    input   reg_intf::reg_intf_req_a32_d32              i_req,
+    output  reg_intf::reg_intf_resp_d32                 o_resp,
     /** Gateway */
     output  logic [NR_SRC-1:0][10:0]                    o_sourcecfg,
     output  logic [NR_REG:0][NR_BITS_SRC-1:0]           o_sugg_setip,
