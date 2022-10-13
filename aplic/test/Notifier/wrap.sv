@@ -12,7 +12,7 @@ module aplic_domain_notifier_wrapper #(
     parameter int   NR_SRC      = 32,
     parameter int   NR_BITS_SRC = (NR_SRC > 31)? 32:NR_SRC,
     parameter int   NR_REG      = (NR_SRC-1)/32,
-    parameter int   NR_IDC      = 1,
+    parameter int   NR_IDCs      = 1,
     parameter       MODE        = "DIRECT"
 ) (
     input   logic                                       i_clk,
@@ -22,12 +22,12 @@ module aplic_domain_notifier_wrapper #(
     input   logic [((NR_REG+1)*NR_BITS_SRC)-1:0]        i_setie_q,
     input   logic [(NR_SRC*32)-1:0]                     i_target_q,
     /**  interface for direct mode */
-    input   logic [NR_IDC-1:0]                          i_idelivery,
-    input   logic [NR_IDC-1:0]                          i_iforce,
-    input   logic [(NR_IDC*3)-1:0]                      i_ithreshold,
-    output  logic [(NR_IDC*26)-1:0]                     o_topi_sugg,
+    input   logic [NR_IDCs-1:0]                          i_idelivery,
+    input   logic [NR_IDCs-1:0]                          i_iforce,
+    input   logic [(NR_IDCs*3)-1:0]                      i_ithreshold,
+    output  logic [(NR_IDCs*26)-1:0]                     o_topi_sugg,
     output  logic                                       o_topi_update,
-    output  logic [NR_IDC-1:0]                          o_Xeip_targets //,
+    output  logic [NR_IDCs-1:0]                          o_Xeip_targets //,
     /** interface for MSI mode */
     // input   logic [31:0]                            i_mmsiaddrcfg,
     // input   logic [31:0]                            i_mmsiaddrcfgh,
@@ -43,12 +43,12 @@ logic [NR_REG:0][NR_BITS_SRC-1:0]       setip_q_i;
 logic [NR_REG:0][NR_BITS_SRC-1:0]       setie_q_i;
 logic [NR_SRC-1:0][31:0]                target_q_i;
 /**  interface for direct mode */
-logic [NR_IDC-1:0]                      idelivery_i;
-logic [NR_IDC-1:0]                      iforce_i;
-logic [NR_IDC-1:0][2:0]                 ithreshold_i;
-logic [NR_IDC-1:0][25:0]                topi_sugg_o;
+logic [NR_IDCs-1:0]                      idelivery_i;
+logic [NR_IDCs-1:0]                      iforce_i;
+logic [NR_IDCs-1:0][2:0]                 ithreshold_i;
+logic [NR_IDCs-1:0][25:0]                topi_sugg_o;
 logic                                   topi_update_o;
-logic [NR_IDC-1:0]                      Xeip_targets_o;
+logic [NR_IDCs-1:0]                      Xeip_targets_o;
 /** interface for MSI mode */
 // logic [31:0]                            mmsiaddrcfg_i;
 // logic [31:0]                            mmsiaddrcfgh_i;
@@ -70,7 +70,7 @@ for (genvar i = 0; i <= NR_REG; i++) begin
     assign setip_q_i[i]         = i_setip_q[i*NR_BITS_SRC +: NR_BITS_SRC];
     assign setie_q_i[i]         = i_setie_q[i*NR_BITS_SRC +: NR_BITS_SRC];
 end
-for (genvar i = 0; i < NR_IDC; i++) begin
+for (genvar i = 0; i < NR_IDCs; i++) begin
     assign idelivery_i[i]                   = i_idelivery[i];
     assign iforce_i[i]                      = i_iforce[i];
     assign ithreshold_i[i]                  = i_ithreshold[i*(2+1) +: (2+1)];
@@ -83,7 +83,7 @@ aplic_domain_notifier #(
     .NR_SRC(NR_SRC),
     .NR_BITS_SRC(NR_BITS_SRC),
     .NR_REG(NR_REG),
-    .NR_IDC(NR_IDC),
+    .NR_IDCs(NR_IDCs),
     .MODE(MODE)
 ) aplic_domain_notifier_i (
     .i_clk(clk_i),
