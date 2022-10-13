@@ -1,6 +1,6 @@
 /** 
 *   Name: APLIC domain register map (generic)
-*   Date: 2022-10-11 19:10:48.040152
+*   Date: 2022-10-12 17:31:03.144662
 *   Author: F.Marques <fmarques_00@protonmail.com>
 * 
 *   Description: This module is a generic APLIC domain register map.
@@ -9,7 +9,8 @@
 */ 
 module aplic_regmap #(
    parameter int                       DOMAIN_ADDR = 32'hc000000,
-   parameter int                       NR_SRC      = 30,
+   parameter int                       NR_SRC      = 31,
+   parameter int                       NR_REG      = 0,
    parameter int                       MIN_PRIO    = 6,
    parameter int                       IPRIOLEN    = 3,
    parameter int                       NR_IDCs     = 2
@@ -45,35 +46,45 @@ module aplic_regmap #(
   output logic [0:0]            o_smsiaddrcfgh_we,
   output logic [0:0]            o_smsiaddrcfgh_re,
   // Register: setip
-  input  logic [0:0][31:0]      i_setip,
-  output logic [0:0][31:0]      o_setip,
-  output logic [0:0]            o_setip_we,
-  output logic [0:0]            o_setip_re,
+  input  logic [NR_REG:0][31:0]      i_setip,
+  output logic [NR_REG:0][31:0]      o_setip,
+  output logic [NR_REG:0]            o_setip_we,
+  output logic [NR_REG:0]            o_setip_re,
   // Register: setipnum
+  input  logic [0:0][31:0]      i_setipnum,
   output logic [0:0][31:0]      o_setipnum,
   output logic [0:0]            o_setipnum_we,
+  output logic [0:0]            o_setipnum_re,
   // Register: in_clrip
-  input  logic [0:0][31:0]      i_in_clrip,
-  output logic [0:0][31:0]      o_in_clrip,
-  output logic [0:0]            o_in_clrip_we,
-  output logic [0:0]            o_in_clrip_re,
+  input  logic [NR_REG:0][31:0]      i_in_clrip,
+  output logic [NR_REG:0][31:0]      o_in_clrip,
+  output logic [NR_REG:0]            o_in_clrip_we,
+  output logic [NR_REG:0]            o_in_clrip_re,
   // Register: clripnum
+  input  logic [0:0][31:0]      i_clripnum,
   output logic [0:0][31:0]      o_clripnum,
   output logic [0:0]            o_clripnum_we,
+  output logic [0:0]            o_clripnum_re,
   // Register: setie
-  input  logic [0:0][31:0]      i_setie,
-  output logic [0:0][31:0]      o_setie,
-  output logic [0:0]            o_setie_we,
-  output logic [0:0]            o_setie_re,
+  input  logic [NR_REG:0][31:0]      i_setie,
+  output logic [NR_REG:0][31:0]      o_setie,
+  output logic [NR_REG:0]            o_setie_we,
+  output logic [NR_REG:0]            o_setie_re,
   // Register: setienum
+  input  logic [0:0][31:0]      i_setienum,
   output logic [0:0][31:0]      o_setienum,
   output logic [0:0]            o_setienum_we,
+  output logic [0:0]            o_setienum_re,
   // Register: clrie
-  output logic [0:0][31:0]      o_clrie,
-  output logic [0:0]            o_clrie_we,
+  input  logic [NR_REG:0][31:0]      i_clrie,
+  output logic [NR_REG:0][31:0]      o_clrie,
+  output logic [NR_REG:0]            o_clrie_we,
+  output logic [NR_REG:0]            o_clrie_re,
   // Register: clrienum
+  input  logic [0:0][31:0]      i_clrienum,
   output logic [0:0][31:0]      o_clrienum,
   output logic [0:0]            o_clrienum_we,
+  output logic [0:0]            o_clrienum_re,
   // Register: setipnum_le
   input  logic [0:0][31:0]      i_setipnum_le,
   output logic [0:0][31:0]      o_setipnum_le,
@@ -317,6 +328,10 @@ always_comb begin
           o_sourcecfg[30][10:0]     = i_req.wdata[10:0];
           o_sourcecfg_we[30]      = 1'b1;
         end
+        DOMAIN_ADDR + 32'h80: begin
+          o_sourcecfg[31][10:0]     = i_req.wdata[10:0];
+          o_sourcecfg_we[31]      = 1'b1;
+        end
         DOMAIN_ADDR + 32'h1bc0: begin
           o_mmsiaddrcfg[0][31:0]     = i_req.wdata[31:0];
           o_mmsiaddrcfg_we[0]      = 1'b1;
@@ -501,6 +516,10 @@ always_comb begin
           o_target[30][31:0]     = i_req.wdata[31:0];
           o_target_we[30]      = 1'b1;
         end
+        DOMAIN_ADDR + 32'h3080: begin
+          o_target[31][31:0]     = i_req.wdata[31:0];
+          o_target_we[31]      = 1'b1;
+        end
         DOMAIN_ADDR + 32'h4000: begin
           o_idelivery[0][0:0]     = i_req.wdata[0:0];
           o_idelivery_we[0]      = 1'b1;
@@ -657,6 +676,10 @@ always_comb begin
           o_resp.rdata[10:0]     = i_sourcecfg[30][10:0];
           o_sourcecfg_re[30]      = 1'b1;
         end
+        DOMAIN_ADDR + 32'h80: begin
+          o_resp.rdata[10:0]     = i_sourcecfg[31][10:0];
+          o_sourcecfg_re[31]      = 1'b1;
+        end
         DOMAIN_ADDR + 32'h1bc0: begin
           o_resp.rdata[31:0]     = i_mmsiaddrcfg[0][31:0];
           o_mmsiaddrcfg_re[0]      = 1'b1;
@@ -678,27 +701,32 @@ always_comb begin
           o_setip_re[0]      = 1'b1;
         end
         DOMAIN_ADDR + 32'h1cdc: begin
-          o_resp.rdata[31:0]     = '0; //setipnum
+          o_resp.rdata[31:0]     = i_setipnum[0][31:0];
+          o_setipnum_re[0]      = 1'b1;
         end
         DOMAIN_ADDR + 32'h1d00: begin
           o_resp.rdata[31:0]     = i_in_clrip[0][31:0];
           o_in_clrip_re[0]      = 1'b1;
         end
         DOMAIN_ADDR + 32'h1ddc: begin
-          o_resp.rdata[31:0]     = '0; //clripnum
+          o_resp.rdata[31:0]     = i_clripnum[0][31:0];
+          o_clripnum_re[0]      = 1'b1;
         end
         DOMAIN_ADDR + 32'h1e00: begin
           o_resp.rdata[31:0]     = i_setie[0][31:0];
           o_setie_re[0]      = 1'b1;
         end
         DOMAIN_ADDR + 32'h1edc: begin
-          o_resp.rdata[31:0]     = '0; //setienum
+          o_resp.rdata[31:0]     = i_setienum[0][31:0];
+          o_setienum_re[0]      = 1'b1;
         end
         DOMAIN_ADDR + 32'h1f00: begin
-          o_resp.rdata[31:0]     = '0; //clrie
+          o_resp.rdata[31:0]     = i_clrie[0][31:0];
+          o_clrie_re[0]      = 1'b1;
         end
         DOMAIN_ADDR + 32'h1fdc: begin
-          o_resp.rdata[31:0]     = '0; //clrienum
+          o_resp.rdata[31:0]     = i_clrienum[0][31:0];
+          o_clrienum_re[0]      = 1'b1;
         end
         DOMAIN_ADDR + 32'h2000: begin
           o_resp.rdata[31:0]     = i_setipnum_le[0][31:0];
@@ -835,6 +863,10 @@ always_comb begin
         DOMAIN_ADDR + 32'h307c: begin
           o_resp.rdata[31:0]     = i_target[30][31:0];
           o_target_re[30]      = 1'b1;
+        end
+        DOMAIN_ADDR + 32'h3080: begin
+          o_resp.rdata[31:0]     = i_target[31][31:0];
+          o_target_re[31]      = 1'b1;
         end
         DOMAIN_ADDR + 32'h4000: begin
           o_resp.rdata[0:0]     = i_idelivery[0][0:0];
