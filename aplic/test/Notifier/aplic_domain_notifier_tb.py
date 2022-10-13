@@ -137,7 +137,7 @@ async def generate_clock(dut):
         await Timer(1, units="ns")
 
 @cocotb.test()
-async def gateway_unit_test(dut):
+async def notifier_unit_test(dut):
     """Try accessing the design."""
 
     dut.ni_rst.value = 1
