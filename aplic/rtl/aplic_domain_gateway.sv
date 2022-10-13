@@ -102,7 +102,7 @@ end
 /** Choose logic to set pend */
 always_comb begin
    for(int j = 0; j <= NR_REG; j++) begin
-        for (int i = 1; i < NR_BITS_SRC; i++) begin
+        for (int i = (j == 0) ? 1 : 0; i < NR_BITS_SRC; i++) begin
             case (intp_pen_src_i[(j*NR_BITS_SRC) + i])
                 DETACHED_C: begin
                     o_intp_pen[j][i] = i_sugg_setip[j][i] & i_active[j][i] & ~(i_claimed[j][i]);
@@ -114,7 +114,7 @@ always_comb begin
                     o_intp_pen[j][i] = new_intp_i[j][i] & i_active[j][i];
                 end
                 LEVELXDM1_C: begin
-                    o_intp_pen[j][i] = (new_intp_i[j][i] | i_sugg_setip[j][i]) & i_active[j][i] & ~(~new_intp_i[j][i]);
+                    o_intp_pen[j][i] = (new_intp_i[j][i] | i_sugg_setip[j][i]) & i_active[j][i] & ~(~new_intp_i[j][i] | i_claimed[j][i]);
                 end
                 default: begin
                     o_intp_pen[j][i] = 1'b0;
