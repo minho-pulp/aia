@@ -117,6 +117,7 @@ class AddrMap:
     output += "module {} #(\n".format(regmap_name)
     output += "   parameter int                       DOMAIN_ADDR = 32'h{},\n".format(hex(addr)[2:])
     output += "   parameter int                       NR_SRC      = {},\n".format(nr_src)
+    output += "   parameter int                       NR_REG      = {},\n".format(nr_reg_needed_for_interrupt)
     output += "   parameter int                       MIN_PRIO    = {},\n".format(min_prio)
     output += "   parameter int                       IPRIOLEN    = {},\n".format(priority_width)
     output += "   parameter int                       NR_IDCs     = {}\n".format(nr_idc)
@@ -138,7 +139,7 @@ class AddrMap:
           case 3: #SOURCES_ENTRY
             output += "  input  logic [{}:0][{}:0]      i_{},\n".format(i[1], i[2]-1, i[0])
             output += "  output logic [{}:0]            o_{}_re,\n".format(i[1], i[0])
-      elif i[3] == Access.RW:
+      elif (i[3] == Access.RW) | (i[3] == Access.WAR0):
         match i[4]:
           case 0: #NORMAL_ENTRY
             output += "  input  logic [{}:0][{}:0]      i_{},\n".format(i[1]-1, i[2]-1, i[0])
@@ -160,20 +161,6 @@ class AddrMap:
             output += "  output logic [{}:0][{}:0]      o_{},\n".format(i[1], i[2]-1, i[0])
             output += "  output logic [{}:0]            o_{}_we,\n".format(i[1], i[0])
             output += "  output logic [{}:0]            o_{}_re,\n".format(i[1], i[0])
-      elif i[3] == Access.WAR0:
-        match i[4]:
-          case 0: #NORMAL_ENTRY
-            output += "  output logic [{}:0][{}:0]      o_{},\n".format(i[1]-1, i[2]-1, i[0])
-            output += "  output logic [{}:0]            o_{}_we,\n".format(i[1]-1, i[0])
-          case 1: #REG_MACRO_ENTRY
-            output += "  output logic [{}-1:0][{}:0]    o_{},\n".format(i[1], i[2]-1, i[0])
-            output += "  output logic [{}-1:0]          o_{}_we,\n".format(i[1], i[0])
-          case 2: #REG_BIT_W_MACRO_ENTRY
-            output += "  output logic [{}-1:0][{}-1:0]  o_{},\n".format(i[1], i[2], i[0])
-            output += "  output logic [{}-1:0]          o_{}_we,\n".format(i[1], i[0])
-          case 3: #SOURCES_ENTRY
-            output += "  output logic [{}:0][{}:0]      o_{},\n".format(i[1], i[2]-1, i[0])
-            output += "  output logic [{}:0]            o_{}_we,\n".format(i[1], i[0])
 
     output += "  // Bus Interface\n"
     output += "  input  reg_intf::reg_intf_req_a32_d32 i_req,\n"
@@ -216,15 +203,11 @@ class AddrMap:
       if last_name != i.name:
         j = 0
       output += "        DOMAIN_ADDR + {}'h{}: begin\n".format(self.access_width, hex(i.addr - addr)[2:])
-      if (i.access == Access.WAR0):
-        output += "          o_resp.rdata[{}:0]     = '0; //{}\n".format(i.width - 1, i.name)
+      if type(i.width) is str:
+        output += "          o_resp.rdata[{}-1:0]     = i_{}[{}][{}-1:0];\n".format(i.width, i.name, j, i.width)
       else:
-        if type(i.width) is str:
-          output += "          o_resp.rdata[{}-1:0]     = i_{}[{}][{}-1:0];\n".format(i.width, i.name, j, i.width)
-        else:
-          output += "          o_resp.rdata[{}:0]     = i_{}[{}][{}:0];\n".format(i.width - 1, i.name, j, i.width - 1)
-      if (i.access != Access.WAR0):
-        output += "          o_{}_re[{}]      = 1'b1;\n".format(i.name, j)
+        output += "          o_resp.rdata[{}:0]     = i_{}[{}][{}:0];\n".format(i.width - 1, i.name, j, i.width - 1)
+      output += "          o_{}_re[{}]      = 1'b1;\n".format(i.name, j)
       output += "        end\n"
       j += 1
       last_name = i.name
@@ -283,9 +266,9 @@ class AddrMap:
             output += "logic [{}-1:0][{}-1:0]   {}_qi, {}_di;\n".format(i[1], i[2], i[0], i[0])
             output += "logic [{}-1:0]           {}_re;\n".format(i[1], i[0])
           case 3:
-            output += "logic [{}:0][{}:0]       {}_qi, {}_di;\n".format(i[1], i[2]-1, i[0], i[0])
-            output += "logic [{}:0]             {}_re;\n".format(i[1], i[0])
-      elif i[3] == Access.RW:
+            output += "logic [{}-1:0][{}:0]     {}_qi, {}_di;\n".format(i[1], i[2]-1, i[0], i[0])
+            output += "logic [{}-1:0]           {}_re;\n".format(i[1], i[0])
+      elif (i[3] == Access.RW) | (i[3] == Access.WAR0):
         match i[4]:
           case 0:
             output += "logic [{}:0][{}:0]       {}_qi, {}_di;\n".format(i[1]-1, i[2]-1, i[0], i[0])
@@ -303,24 +286,10 @@ class AddrMap:
             output += "logic [{}-1:0]           {}_we;\n".format(i[1], i[0])
             output += "logic [{}-1:0]           {}_re;\n".format(i[1], i[0])
           case 3:
-            output += "logic [{}:0][{}-1:0]     {}_qi, {}_di;\n".format(i[1], i[2]-1, i[0], i[0])
-            output += "logic [{}:0][{}-1:0]     {}_o;\n".format(i[1], i[2]-1, i[0])
-            output += "logic [{}:0]             {}_we;\n".format(i[1], i[0])
-            output += "logic [{}:0]             {}_re;\n".format(i[1], i[0])
-      elif i[3] == Access.WAR0:
-        match i[4]:
-          case 0:
-            output += "logic [{}:0][{}:0]       {}_o;\n".format(i[1]-1, i[2]-1, i[0])
-            output += "logic [{}:0]             {}_we;\n".format(i[1]-1, i[0])
-          case 1:
+            output += "logic [{}-1:0][{}:0]     {}_qi, {}_di;\n".format(i[1], i[2]-1, i[0], i[0])
             output += "logic [{}-1:0][{}:0]     {}_o;\n".format(i[1], i[2]-1, i[0])
             output += "logic [{}-1:0]           {}_we;\n".format(i[1], i[0])
-          case 2:
-            output += "logic [{}-1:0][{}-1:0]   {}_o;\n".format(i[1], i[2], i[0])
-            output += "logic [{}-1:0]           {}_we;\n".format(i[1], i[0])
-          case 3:
-            output += "logic [{}:0][{}-1:0]     {}_o;\n".format(i[1], i[2]-1, i[0])
-            output += "logic [{}:0]             {}_we;\n".format(i[1], i[0])
+            output += "logic [{}-1:0]           {}_re;\n".format(i[1], i[0])
 
     ######################################
     #      Instantiate register map      #
@@ -343,24 +312,20 @@ class AddrMap:
         output += "   .o_{}_we({}_we),\n".format(i[0], i[0])
         output += "   .o_{}_re({}_re),\n".format(i[0], i[0])
       elif i[3] == Access.WAR0:
+        output += "   .i_{}('0),\n".format(i[0], i[0])
         output += "   .o_{}({}_o),\n".format(i[0], i[0])
         output += "   .o_{}_we({}_we),\n".format(i[0], i[0])
+        output += "   .o_{}_re(),\n".format(i[0], i[0])
     output += "); // End of Regmap instance\n\n"
 
     output += "/** Registers sequential logic */\n"
     output += "always_ff @( posedge i_clk or negedge ni_rst ) begin\n"
     output += "   if (!ni_rst) begin\n"
     for i in self.ports:
-      if i[3] == Access.RO:
-          output += "     {}_qi <= '0;\n".format(i[0])
-      elif i[3] == Access.RW:
-          output += "     {}_qi <= '0;\n".format(i[0])
+      output += "     {}_qi <= '0;\n".format(i[0])
     output += "   end else begin\n"
     for i in self.ports:
-      if i[3] == Access.RO:
-          output += "     {}_qi <= {}_di;\n".format(i[0], i[0])
-      elif i[3] == Access.RW:
-          output += "     {}_qi <= {}_di;\n".format(i[0], i[0])
+      output += "     {}_qi <= {}_di;\n".format(i[0], i[0])
     output += "   end\n"
     output += "end\n"
     output += "endmodule\n"
@@ -581,11 +546,12 @@ if __name__ == "__main__":
     # if the number of sources interrupt were less then 31 
     # implement only 1 setip reg with only the existent sources
     nr_setip = nr_reg_needed_for_interrupt
-    if nr_setip == 0:
-      #addrmap.addEntry(setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, nr_src_eff)
-      addrmap.addEntry(setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, REGISTER_DEF_SIZE32)
-    elif nr_setip >= 1:
-      addrmap.addEntries(nr_setip+1, setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, REGISTER_DEF_SIZE32)
+    # if nr_setip == 0:
+    #   #addrmap.addEntry(setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, nr_src_eff)
+    #   addrmap.addEntry(setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, REGISTER_DEF_SIZE32)
+    # elif nr_setip >= 1:
+    #   addrmap.addEntries(nr_setip+1, setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, REGISTER_DEF_SIZE32)
+    addrmap.addEntriesMacro(nr_setip+1, "NR_REG", SOURCES_ENTRY, setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, REGISTER_DEF_SIZE32)
 
     # setipnum registers
     addrmap.addEntry(setipnumAddr, aplic_base, mode + "setipnum", mode + "setipnum", Access.WAR0, REGISTER_DEF_SIZE32)
@@ -595,11 +561,12 @@ if __name__ == "__main__":
       # if the number of sources interrupt were less then 31 
       # implement only 1 setip reg with only the existent sources
     nr_in_clrip = nr_reg_needed_for_interrupt
-    if nr_in_clrip == 0:
-      #addrmap.addEntry(in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, nr_src_eff)
-      addrmap.addEntry(in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, REGISTER_DEF_SIZE32)
-    elif nr_in_clrip >= 1:
-      addrmap.addEntries(nr_in_clrip+1, in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, REGISTER_DEF_SIZE32)
+    # if nr_in_clrip == 0:
+    #   #addrmap.addEntry(in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, nr_src_eff)
+    #   addrmap.addEntry(in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, REGISTER_DEF_SIZE32)
+    # elif nr_in_clrip >= 1:
+    #   addrmap.addEntries(nr_in_clrip+1, in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, REGISTER_DEF_SIZE32)
+    addrmap.addEntriesMacro(nr_in_clrip+1, "NR_REG", SOURCES_ENTRY, in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, REGISTER_DEF_SIZE32)
 
     # clripnum registers
     addrmap.addEntry(clripnumAddr, aplic_base, mode + "clripnum", mode + "clripnum", Access.WAR0, REGISTER_DEF_SIZE32)
@@ -609,11 +576,12 @@ if __name__ == "__main__":
       # if the number of sources interrupt were less then 31 
       # implement only 1 setip reg with only the existent sources
     nr_setie = nr_reg_needed_for_interrupt
-    if nr_setie == 0:
-      #addrmap.addEntry(setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, nr_src_eff)
-      addrmap.addEntry(setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, REGISTER_DEF_SIZE32)
-    elif nr_setie >= 1:
-      addrmap.addEntries(nr_setie+1, setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, REGISTER_DEF_SIZE32)
+    # if nr_setie == 0:
+    #   #addrmap.addEntry(setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, nr_src_eff)
+    #   addrmap.addEntry(setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, REGISTER_DEF_SIZE32)
+    # elif nr_setie >= 1:
+    #   addrmap.addEntries(nr_setie+1, setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, REGISTER_DEF_SIZE32)
+    addrmap.addEntriesMacro(nr_setie+1, "NR_REG", SOURCES_ENTRY , setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, REGISTER_DEF_SIZE32)
 
     # setienum registers
     addrmap.addEntry(setienumAddr, aplic_base, mode + "setienum", mode + "setienum", Access.WAR0, REGISTER_DEF_SIZE32)
@@ -623,11 +591,12 @@ if __name__ == "__main__":
       # if the number of sources interrupt were less then 31 
       # implement only 1 setip reg with only the existent sources
     nr_clrie = nr_reg_needed_for_interrupt
-    if nr_clrie == 0:
-      #addrmap.addEntry(clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.RW, nr_src_eff)
-      addrmap.addEntry(clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.WAR0, REGISTER_DEF_SIZE32)
-    elif nr_clrie >= 1:
-      addrmap.addEntries(nr_clrie+1, clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.WAR0, REGISTER_DEF_SIZE32)
+    # if nr_clrie == 0:
+    #   #addrmap.addEntry(clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.RW, nr_src_eff)
+    #   addrmap.addEntry(clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.WAR0, REGISTER_DEF_SIZE32)
+    # elif nr_clrie >= 1:
+    #   addrmap.addEntries(nr_clrie+1, clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.WAR0, REGISTER_DEF_SIZE32)
+    addrmap.addEntriesMacro(nr_clrie+1, "NR_REG", SOURCES_ENTRY, clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.WAR0, REGISTER_DEF_SIZE32)
 
     # clrienum registers
     addrmap.addEntry(clrienumAddr, aplic_base, mode + "clrienum", mode + "clrienum", Access.WAR0, REGISTER_DEF_SIZE32)
