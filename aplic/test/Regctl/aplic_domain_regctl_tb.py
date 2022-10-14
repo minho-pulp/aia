@@ -14,7 +14,12 @@ NR_REG                  = NR_SRC//32
 NR_IDC                  = 1
 
 SRC_PER_BIT             = 1
- 
+SRCCFG_W                = 11
+
+APLIC_BASE              = 0xc000000
+SOURCECFG_BASE          = APLIC_BASE + 0x0004
+SOURCECFG_OFF           = 0x0004
+
 # interrupt sources macros
 # Just to make the code more readable
 class CSources:
@@ -28,19 +33,15 @@ class CIDCs:
 idc = CIDCs()
 
 class CInputs:
-    i_sourcecfg = 0
-    i_sugg_setip = 0
-    i_domaincfgDM = 0
-    i_active = 0
-    i_claimed_forwarde = 0
-    i_domaincfgIE = 0
-    i_setip_q = 0
-    i_setie_q = 0
-    i_target_q = 0
-    i_idelivery = 0
-    i_iforce = 0
-    i_ithreshold = 0
-
+    reg_intf_req_a32_d32_addr = 0
+    reg_intf_req_a32_d32_write = 0
+    reg_intf_req_a32_d32_wdata = 0
+    reg_intf_req_a32_d32_wstrb = 0
+    reg_intf_req_a32_d32_valid = 0
+    i_intp_pen = 0
+    i_rectified_src = 0
+    i_topi_sugg = 0
+    i_topi_update = 0
 
 class CInternals:
     setie_select_i = 0
@@ -48,10 +49,21 @@ class CInternals:
     topi_update_i = 0
 
 class COutputs:
-    o_intp_pen = 0
-    o_rectified_src = 0
-    o_topi_sugg = 0
-    o_topi_update = 0
+    reg_intf_resp_d32_rdata = 0
+    reg_intf_resp_d32_error = 0
+    reg_intf_resp_d32_ready = 0
+    o_sourcecfg = 0
+    o_sugg_setip = 0
+    o_domaincfgDM = 0
+    o_active = 0
+    o_claimed_forwarded = 0
+    o_domaincfgIE = 0
+    o_setip_q = 0
+    o_setie_q = 0
+    o_target_q = 0
+    o_idelivery = 0
+    o_iforce = 0
+    o_ithreshold = 0
 
 input                   = CInputs()
 internal                = CInternals()
@@ -71,10 +83,37 @@ def read_bit_from_reg(reg, bit_num):
     aux     = (aux >> bit_num) & 1
     return aux
 
+def axi_write_reg(dut, addr, data):
+    input.reg_intf_req_a32_d32_addr = addr
+    input.reg_intf_req_a32_d32_wdata = data
+    input.reg_intf_req_a32_d32_write = 1 
+    input.reg_intf_req_a32_d32_wstrb = 0 
+    input.reg_intf_req_a32_d32_valid = 1
+
+    dut.reg_intf_req_a32_d32_addr.value = input.reg_intf_req_a32_d32_addr
+    dut.reg_intf_req_a32_d32_wdata.value = input.reg_intf_req_a32_d32_wdata
+    dut.reg_intf_req_a32_d32_write.value = input.reg_intf_req_a32_d32_write
+    dut.reg_intf_req_a32_d32_wstrb.value = input.reg_intf_req_a32_d32_wstrb
+    dut.reg_intf_req_a32_d32_valid.value = input.reg_intf_req_a32_d32_valid 
+
+def axi_read_reg(dut, addr):
+    input.reg_intf_req_a32_d32_addr = addr
+    input.reg_intf_req_a32_d32_valid = 1
+    input.reg_intf_req_a32_d32_write = 0
+
+    dut.reg_intf_req_a32_d32_addr.value = input.reg_intf_req_a32_d32_addr
+    dut.reg_intf_req_a32_d32_write.value = input.reg_intf_req_a32_d32_write
+    dut.reg_intf_req_a32_d32_valid.value = input.reg_intf_req_a32_d32_valid 
+
+    outputs.reg_intf_resp_d32_rdata = dut.reg_intf_resp_d32_rdata.value
+    return outputs.reg_intf_resp_d32_rdata 
+    
+
 async def debug_config(dut):
-    # Set pending bit for interrupt 17
-    input.i_sugg_setip          = set_or_reg(input.i_sugg_setip, 1, SRC_PER_BIT, intp.SRC[1])
-    dut.i_sugg_setip.value      = input.i_sugg_setip
+    # write to sourcecfg 1
+    axi_write_reg(dut, SOURCECFG_BASE+(SOURCECFG_OFF * 1), 1)
+    
+    outputs.o_sourcecfg = set_reg(outputs.o_sourcecfg, 1, SRCCFG_W, intp.SRC[1])
 
     #...
 
@@ -107,3 +146,6 @@ async def regctl_unit_test(dut):
 
     await cocotb.start(debug_config(dut))
 
+    await Timer(11, units="ns")
+    
+    assert dut.o_sourcecfg.value     == outputs.o_sourcecfg , "Oh boy, you mess it up in o_sourcecfg!"
