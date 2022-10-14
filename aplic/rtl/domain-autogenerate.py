@@ -172,7 +172,7 @@ class AddrMap:
     output += "  o_resp.error = '0;\n"
     for i in self.ports:
       if i[3] != Access.RO:
-        output += "  o_{}_o = '0;\n".format(i[0])
+        output += "  o_{} = '0;\n".format(i[0])
         output += "  o_{}_we = '0;\n".format(i[0])
         output += "  o_{}_re = '0;\n".format(i[0])
     output += "  if (i_req.valid) begin\n"
