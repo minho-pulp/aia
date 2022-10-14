@@ -331,9 +331,8 @@ module aplic_domain_regctl #(
   // Determines which interrupts are active
   always_comb begin
     for (int i = 1; i < NR_SRC; i++) begin
-        if((sourcecfg_qi[i][10] == DELEGATED) || 
-          ~((sourcecfg_qi[i][10] == NON_DELEGATED) && (sourcecfg_qi[i][2:0] == INACTIVE))) begin
-            active_i[i/32][i%32] = 1'b1;
+        if(!((sourcecfg_qi[i][10] == DELEGATED) || 
+          !((sourcecfg_qi[i][10] == NON_DELEGATED) && (sourcecfg_qi[i][2:0] == INACTIVE)))) begin
         end else begin
           active_i[i/32][i%32] = 1'b0; 
         end
