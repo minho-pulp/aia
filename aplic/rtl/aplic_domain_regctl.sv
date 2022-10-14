@@ -69,6 +69,9 @@ module aplic_domain_regctl #(
 
   localparam ZERO_FORCE               = 2'h1;
   localparam W_FORCE                  = 2'h2;
+
+  localparam INTP_ACTIVE              = 1'b1;
+  localparam INTP_NOT_ACTIVE          = 1'b0;
 // =========================================================
 
 // ============== INTERNAL SIGANLS DEFINITION ==============
@@ -333,8 +336,9 @@ module aplic_domain_regctl #(
     for (int i = 1; i < NR_SRC; i++) begin
         if(!((sourcecfg_qi[i][10] == DELEGATED) || 
           !((sourcecfg_qi[i][10] == NON_DELEGATED) && (sourcecfg_qi[i][2:0] == INACTIVE)))) begin
+          active_i[i/32][i%32] = INTP_ACTIVE;
         end else begin
-          active_i[i/32][i%32] = 1'b0; 
+          active_i[i/32][i%32] = INTP_NOT_ACTIVE; 
         end
     end
     active_i[0][0] = 1'b0;
