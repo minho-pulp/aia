@@ -77,7 +77,7 @@ module aplic_domain_regctl #(
 // ============== INTERNAL SIGANLS DEFINITION ==============
   logic [NR_REG:0][NR_BITS_SRC-1:0]   active_i;
   logic [NR_REG:0][NR_BITS_SRC-1:0]   claimed_forwarded_i;
-  logic [NR_REG:0][NR_BITS_SRC:0]     in_rectified_qi, in_rectified_di;
+  logic [NR_REG:0][NR_BITS_SRC-1:0]   in_rectified_qi, in_rectified_di;
   logic [NR_IDCs-1:0][25:0]           topi_sugg_i;
   logic                               topi_update_i;
   /** control */
@@ -254,7 +254,7 @@ module aplic_domain_regctl #(
     .o_setipnum_we(setipnum_we),
     .o_setipnum_re(),
     // Register: in_clrip
-    .i_in_clrip(in_clrip_qi),
+    .i_in_clrip(in_rectified_qi),
     .o_in_clrip(in_clrip_o),
     .o_in_clrip_we(in_clrip_we),
     .o_in_clrip_re(in_clrip_re),
