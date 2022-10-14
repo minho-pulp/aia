@@ -1,6 +1,6 @@
 /** 
 *   Name: APLIC domain register map (generic)
-*   Date: 2022-10-12 17:31:03.144662
+*   Date: 2022-10-14 16:59:49.913859
 *   Author: F.Marques <fmarques_00@protonmail.com>
 * 
 *   Description: This module is a generic APLIC domain register map.
@@ -134,67 +134,67 @@ always_comb begin
   o_resp.ready = 1'b1;
   o_resp.rdata = '0;
   o_resp.error = '0;
-  o_domaincfg_o = '0;
+  o_domaincfg = '0;
   o_domaincfg_we = '0;
   o_domaincfg_re = '0;
-  o_sourcecfg_o = '0;
+  o_sourcecfg = '0;
   o_sourcecfg_we = '0;
   o_sourcecfg_re = '0;
-  o_mmsiaddrcfg_o = '0;
+  o_mmsiaddrcfg = '0;
   o_mmsiaddrcfg_we = '0;
   o_mmsiaddrcfg_re = '0;
-  o_mmsiaddrcfgh_o = '0;
+  o_mmsiaddrcfgh = '0;
   o_mmsiaddrcfgh_we = '0;
   o_mmsiaddrcfgh_re = '0;
-  o_smsiaddrcfg_o = '0;
+  o_smsiaddrcfg = '0;
   o_smsiaddrcfg_we = '0;
   o_smsiaddrcfg_re = '0;
-  o_smsiaddrcfgh_o = '0;
+  o_smsiaddrcfgh = '0;
   o_smsiaddrcfgh_we = '0;
   o_smsiaddrcfgh_re = '0;
-  o_setip_o = '0;
+  o_setip = '0;
   o_setip_we = '0;
   o_setip_re = '0;
-  o_setipnum_o = '0;
+  o_setipnum = '0;
   o_setipnum_we = '0;
   o_setipnum_re = '0;
-  o_in_clrip_o = '0;
+  o_in_clrip = '0;
   o_in_clrip_we = '0;
   o_in_clrip_re = '0;
-  o_clripnum_o = '0;
+  o_clripnum = '0;
   o_clripnum_we = '0;
   o_clripnum_re = '0;
-  o_setie_o = '0;
+  o_setie = '0;
   o_setie_we = '0;
   o_setie_re = '0;
-  o_setienum_o = '0;
+  o_setienum = '0;
   o_setienum_we = '0;
   o_setienum_re = '0;
-  o_clrie_o = '0;
+  o_clrie = '0;
   o_clrie_we = '0;
   o_clrie_re = '0;
-  o_clrienum_o = '0;
+  o_clrienum = '0;
   o_clrienum_we = '0;
   o_clrienum_re = '0;
-  o_setipnum_le_o = '0;
+  o_setipnum_le = '0;
   o_setipnum_le_we = '0;
   o_setipnum_le_re = '0;
-  o_setipnum_be_o = '0;
+  o_setipnum_be = '0;
   o_setipnum_be_we = '0;
   o_setipnum_be_re = '0;
-  o_genmsi_o = '0;
+  o_genmsi = '0;
   o_genmsi_we = '0;
   o_genmsi_re = '0;
-  o_target_o = '0;
+  o_target = '0;
   o_target_we = '0;
   o_target_re = '0;
-  o_idelivery_o = '0;
+  o_idelivery = '0;
   o_idelivery_we = '0;
   o_idelivery_re = '0;
-  o_iforce_o = '0;
+  o_iforce = '0;
   o_iforce_we = '0;
   o_iforce_re = '0;
-  o_ithreshold_o = '0;
+  o_ithreshold = '0;
   o_ithreshold_we = '0;
   o_ithreshold_re = '0;
   if (i_req.valid) begin
