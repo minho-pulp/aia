@@ -13,12 +13,22 @@ NR_BITS_SRC             = NR_SRC if (NR_SRC > 31) else 32
 NR_REG                  = NR_SRC//32
 NR_IDC                  = 1
 
+IDC_PER_BIT             = 1
 SRC_PER_BIT             = 1
 SRCCFG_W                = 11
+
+TOPI_W                  = 26
+TOPI_INTP_ID            = 16
+TOPI_INTP_PRIO          = 0
 
 APLIC_BASE              = 0xc000000
 SOURCECFG_BASE          = APLIC_BASE + 0x0004
 SOURCECFG_OFF           = 0x0004
+SETIPNUM_BASE           = APLIC_BASE + 0x1CDC
+CLRIPNUM_BASE           = APLIC_BASE + 0x1DDC
+SETIP_BASE              = APLIC_BASE + 0x1C00
+SETIP_OFF               = 0x0004
+INCLRIP_BASE            = APLIC_BASE + 0x1D00
 
 # interrupt sources macros
 # Just to make the code more readable
@@ -110,12 +120,71 @@ def axi_read_reg(dut, addr):
     
 
 async def debug_config(dut):
-    # write to sourcecfg 1
-    axi_write_reg(dut, SOURCECFG_BASE+(SOURCECFG_OFF * 1), 1)
     
-    outputs.o_sourcecfg = set_reg(outputs.o_sourcecfg, 1, SRCCFG_W, intp.SRC[1])
+    ## Test claimed and forwarded register
+    input.i_topi_sugg = set_reg(input.i_topi_sugg, (13 << TOPI_INTP_ID) | (1 << TOPI_INTP_PRIO), TOPI_W, idc.ID[0])
+    dut.i_topi_sugg.value = input.i_topi_sugg
+    input.i_topi_update = set_reg(input.i_topi_update, 1, IDC_PER_BIT, idc.ID[0])
+    dut.i_topi_update.value = input.i_topi_update
 
+    await Timer(1, units="ns")
+    # reading claimi should make 
+    axi_read_reg(dut, 0x401c+APLIC_BASE)
+
+    #### EXPECTED VALUES #####
+    outputs.o_claimed_forwarded = set_reg(outputs.o_claimed_forwarded, 1, SRC_PER_BIT, intp.SRC[13])
     #...
+
+async def test_pending(dut):
+    ## From gateway intp 13 is pending
+    input.i_intp_pen = set_reg(input.i_intp_pen, 1, SRC_PER_BIT, intp.SRC[13])
+    dut.i_intp_pen.value = input.i_intp_pen
+
+    await Timer(1, units="ns")
+    # Set pending bit for interrupt 1
+    axi_write_reg(dut, SETIPNUM_BASE, 1)
+    input.i_intp_pen = set_or_reg(input.i_intp_pen, 1, SRC_PER_BIT, intp.SRC[1])
+    dut.i_intp_pen.value = input.i_intp_pen
+    await Timer(1, units="ns")
+    # clear pending bit for interrupt 1
+    axi_write_reg(dut, CLRIPNUM_BASE, 1)
+    input.i_intp_pen = set_reg(input.i_intp_pen, 1, SRC_PER_BIT, intp.SRC[13])
+    dut.i_intp_pen.value = input.i_intp_pen
+    # Clear the write enable bit
+    await Timer(1, units="ns")
+    axi_read_reg(dut, APLIC_BASE)
+
+    await Timer(1, units="ns")
+    ## Write to setip: set 13 and 17
+    axi_write_reg(dut, SETIP_BASE, (1<<17) | (1<<13))
+    input.i_intp_pen = set_reg(input.i_intp_pen, 1, SRC_PER_BIT, intp.SRC[17])
+    input.i_intp_pen = set_or_reg(input.i_intp_pen, 1, SRC_PER_BIT, intp.SRC[13])
+    dut.i_intp_pen.value = input.i_intp_pen
+    # Clear the write enable bit
+    await Timer(1, units="ns")
+    axi_read_reg(dut, APLIC_BASE)
+
+    await Timer(1, units="ns")
+    ## Write to in_clrip: clr 17
+    axi_write_reg(dut, INCLRIP_BASE, (1<<17))
+    input.i_intp_pen = set_reg(input.i_intp_pen, 1, SRC_PER_BIT, intp.SRC[13])
+    dut.i_intp_pen.value = input.i_intp_pen
+    # Clear the write enable bit
+    await Timer(1, units="ns")
+    axi_read_reg(dut, APLIC_BASE)
+
+    #### EXPECTED VALUES #####
+    outputs.o_sugg_setip = input.i_intp_pen
+
+async def test_active(dut):
+    # Make source 13 active, edge-sensitive rising edge
+    axi_write_reg(dut, SOURCECFG_BASE+(SOURCECFG_OFF * 13), 4)
+    # 
+    #### EXPECTED VALUES #####
+    outputs.o_active = set_reg(outputs.o_active, 1, SRC_PER_BIT, intp.SRC[13])
+    outputs.o_sourcecfg = set_reg(outputs.o_sourcecfg, 4, SRCCFG_W, intp.SRC[13])
+    #...
+
 
 async def generate_clock(dut):
     """Generate clock pulses."""
@@ -144,8 +213,12 @@ async def regctl_unit_test(dut):
     dut.ni_rst.value = 1
     await Timer(1, units="ns")
 
-    await cocotb.start(debug_config(dut))
-
+    #await cocotb.start(debug_config(dut))
+    #await cocotb.start(test_pending(dut))
+    await cocotb.start(test_active(dut))
+    
     await Timer(11, units="ns")
     
     assert dut.o_sourcecfg.value     == outputs.o_sourcecfg , "Oh boy, you mess it up in o_sourcecfg!"
+    assert dut.o_sugg_setip.value    == outputs.o_sugg_setip, "Oh boy, you mess it up in o_sugg_setip!"
+    #assert dut.o_active.value        == outputs.o_active, "Oh boy, you mess it up in o_active!"
