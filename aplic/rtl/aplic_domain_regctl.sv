@@ -347,9 +347,10 @@ module aplic_domain_regctl #(
 
 // ========================= DOMAINCFG ============================
   always_comb begin
-    domaincfg_di    = domaincfg_qi;
     if (domaincfg_we == 1'b1) begin
       domaincfg_di = {8'h80, 15'b0 , domaincfg_o[8], 5'b0 , domaincfg_o[2], 1'b0, domaincfg_o[0]};
+    end else begin
+      domaincfg_di = {8'h80, 15'b0 , domaincfg_qi[8], 5'b0 , domaincfg_qi[2], 1'b0, domaincfg_qi[0]};;
     end
   end
 // ================================================================
@@ -358,7 +359,7 @@ module aplic_domain_regctl #(
   // Determines the new value of sourcecfg
   always_comb begin
     for (int i = 1; i < NR_SRC; i++) begin
-      case (o_sourcecfg[i][10])
+      case (sourcecfg_o[i][10])
         NON_DELEGATED : sourcecfg_aux_di[i] = {sourcecfg_o[i][10], 7'b0, sourcecfg_o[i][2:0]};
         DELEGATED     : sourcecfg_aux_di[i] = (APLIC == "LEAF") ? '0 : sourcecfg_o[i];
         default:; 
@@ -452,9 +453,9 @@ module aplic_domain_regctl #(
   //==== Setip Logic ====
   always_comb begin
     for (int i = 0; i <= NR_REG; i++) begin
-      sugg_setip_i[i] = setip_di[i];
+      sugg_setip_i[i] = setip_qi[i];
       case (setip_select_i)       
-        CLRIP       : sugg_setip_i[i]           = ~in_clrip_qi[i] & setip_di[i];
+        CLRIP       : sugg_setip_i[i]           = ~in_clrip_qi[i] & setip_qi[i];
         SETIPNUM    : sugg_setip_i[i][setipnum_qi%32] = ((setipnum_qi/32) == i) ? 1'b1 : sugg_setip_i[i][setipnum_qi%32];
         CLRIPNUM    : sugg_setip_i[i][clripnum_qi%32] = ((clripnum_qi/32) == i) ? 1'b0 : sugg_setip_i[i][clripnum_qi%32];
         W_SETIP     : sugg_setip_i[i]           = setip_o[i];
@@ -538,13 +539,13 @@ module aplic_domain_regctl #(
 /**=================== Registers sequential logic ===============*/
   always_ff @( posedge i_clk or negedge ni_rst ) begin
     if (!ni_rst) begin
-      domaincfg_qi <= '0;
+      domaincfg_qi <= 32'h80000000;
       setipnum_qi <= '0;
       clripnum_qi <= '0;
       setienum_qi <= '0;
       clrienum_qi <= '0;
-      // setipnum_le_qi <= '0;
-      // setipnum_be_qi <= '0;
+      //  setipnum_le_qi <= '0;
+      //  setipnum_be_qi <= '0;
       //  mmsiaddrcfg_qi <= '0;
       //  mmsiaddrcfgh_qi <= '0;
       //  smsiaddrcfg_qi <= '0;
@@ -573,8 +574,8 @@ module aplic_domain_regctl #(
         clripnum_qi <= clripnum_di;
         setienum_qi <= setienum_di;
         clrienum_qi <= clrienum_di;
-        // setipnum_le_qi <= setipnum_le_di;
-        // setipnum_be_qi <= setipnum_be_di;
+        //  setipnum_le_qi <= setipnum_le_di;
+        //  setipnum_be_qi <= setipnum_be_di;
         //  mmsiaddrcfg_qi <= mmsiaddrcfg_di;
         //  mmsiaddrcfgh_qi <= mmsiaddrcfgh_di;
         //  smsiaddrcfg_qi <= smsiaddrcfg_di;
