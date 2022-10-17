@@ -9,8 +9,8 @@
 */
 
 module aplic_domain_gateway_wrapper #(
-    parameter int NR_SRC = 64,
-    parameter int NR_BITS_SRC = (NR_SRC > 31)? 32 : NR_SRC,
+    parameter int NR_SRC = 32,
+    parameter int NR_BITS_SRC = (NR_SRC > 32)? 32 : NR_SRC,
     parameter int NR_REG = (NR_SRC-1)/32 
 ) (
     input   logic                                       i_clk,

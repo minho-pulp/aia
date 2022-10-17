@@ -123,7 +123,7 @@ async def debug_config(dut):
 
     await Timer(1, units="ns")
     #### EXPECTED VALUES #####
-    outputs.topi_update         = 1
+    outputs.topi_update         = set_reg(outputs.topi_update, 1, IDC_PER_BIT, idc.ID[0])
     outputs.topi_sugg           = set_reg(outputs.topi_sugg, (17 << TOPI_INTP_ID) | (1 << TOPI_INTP_PRIO), TOPI_W, idc.ID[0])
     outputs.Xeip_targets        = set_reg(outputs.Xeip_targets, 1, IDC_PER_BIT, idc.ID[0])
 

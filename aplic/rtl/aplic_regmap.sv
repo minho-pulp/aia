@@ -9,10 +9,10 @@
 */ 
 module aplic_regmap #(
    parameter int                       DOMAIN_ADDR = 32'hc000000,
-   parameter int                       NR_SRC      = 31,
-   parameter int                       NR_REG      = 0,
+   parameter int                       NR_SRC      = 32,
+   parameter int                       NR_REG      = (NR_SRC-1)/32,
    parameter int                       MIN_PRIO    = 6,
-   parameter int                       IPRIOLEN    = 3,
+   parameter int                       IPRIOLEN    = 3, //(MIN_PRIO == 1) ? 1 : $clog2(MIN_PRIO),
    parameter int                       NR_IDCs     = 2
 ) (
   // Register: domaincfg
@@ -21,10 +21,10 @@ module aplic_regmap #(
   output logic [0:0]            o_domaincfg_we,
   output logic [0:0]            o_domaincfg_re,
   // Register: sourcecfg
-  input  logic [NR_SRC:0][10:0]      i_sourcecfg,
-  output logic [NR_SRC:0][10:0]      o_sourcecfg,
-  output logic [NR_SRC:0]            o_sourcecfg_we,
-  output logic [NR_SRC:0]            o_sourcecfg_re,
+  input  logic [NR_SRC-1:0][10:0]      i_sourcecfg,
+  output logic [NR_SRC-1:0][10:0]      o_sourcecfg,
+  output logic [NR_SRC-1:0]            o_sourcecfg_we,
+  output logic [NR_SRC-1:0]            o_sourcecfg_re,
   // Register: mmsiaddrcfg
   input  logic [0:0][31:0]      i_mmsiaddrcfg,
   output logic [0:0][31:0]      o_mmsiaddrcfg,
@@ -101,10 +101,10 @@ module aplic_regmap #(
   output logic [0:0]            o_genmsi_we,
   output logic [0:0]            o_genmsi_re,
   // Register: target
-  input  logic [NR_SRC:0][31:0]      i_target,
-  output logic [NR_SRC:0][31:0]      o_target,
-  output logic [NR_SRC:0]            o_target_we,
-  output logic [NR_SRC:0]            o_target_re,
+  input  logic [NR_SRC-1:0][31:0]      i_target,
+  output logic [NR_SRC-1:0][31:0]      o_target,
+  output logic [NR_SRC-1:0]            o_target_we,
+  output logic [NR_SRC-1:0]            o_target_re,
   // Register: idelivery
   input  logic [NR_IDCs-1:0][0:0]    i_idelivery,
   output logic [NR_IDCs-1:0][0:0]    o_idelivery,

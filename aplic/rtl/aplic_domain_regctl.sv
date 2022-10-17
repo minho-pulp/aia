@@ -11,13 +11,13 @@
 
 module aplic_domain_regctl #(
     parameter int                                       DOMAIN_ADDR = 32'hc000000,
-    parameter int                                       NR_SRC      = 30,
+    parameter int                                       NR_SRC      = 32,
     parameter int                                       MIN_PRIO    = 6,
-    parameter int                                       IPRIOLEN    = (MIN_PRIO == 1) ? 1 : $clog2(MIN_PRIO),
-    parameter int                                       NR_IDCs     = 2,
-    parameter                                           APLIC       = "LEAF", 
+    parameter int                                       NR_IDCs     = 1,
+    parameter                                           APLIC       = "LEAF",
     // DO NOT EDIT BY PARAMETER
-    parameter int                                       NR_BITS_SRC = 32,//(NR_SRC > 31) ? 32 : NR_SRC,
+    parameter int                                       IPRIOLEN    = (MIN_PRIO == 1) ? 1 : $clog2(MIN_PRIO),
+    parameter int                                       NR_BITS_SRC = (NR_SRC > 31) ? 32 : NR_SRC,
     parameter int                                       NR_SRC_W    = 10,//(NR_SRC == 1) ? 1 : $clog2(NR_SRC),
     parameter int                                       NR_REG      = (NR_SRC-1)/32  
 ) (
@@ -44,7 +44,7 @@ module aplic_domain_regctl #(
     output  logic [NR_IDCs-1:0][0:0]                    o_iforce,
     output  logic [NR_IDCs-1:0][IPRIOLEN-1:0]           o_ithreshold,
     input   logic [NR_IDCs-1:0][25:0]                   i_topi_sugg,
-    input   logic                                       i_topi_update
+    input   logic [NR_IDCs-1:0]                         i_topi_update
         /**  interface for msi mode */
 );
 
@@ -74,15 +74,15 @@ module aplic_domain_regctl #(
   localparam INTP_NOT_ACTIVE          = 1'b0;
 // =========================================================
 
-// ============== INTERNAL SIGANLS DEFINITION ==============
+// ============== INTERNAL SIGNALS DEFINITION ==============
   logic [NR_REG:0][NR_BITS_SRC-1:0]   active_i;
   logic [NR_REG:0][NR_BITS_SRC-1:0]   claimed_forwarded_i;
   logic [NR_REG:0][NR_BITS_SRC-1:0]   in_rectified_qi, in_rectified_di;
   logic [NR_IDCs-1:0][25:0]           topi_sugg_i;
-  logic                               topi_update_i;
+  logic [NR_IDCs-1:0]                 topi_update_i;
   /** control */
   logic [2:0]                         setie_select_i, setip_select_i;
-  logic [NR_IDCs-1:0][1:0]              iforce_select_i;
+  logic [NR_IDCs-1:0][1:0]            iforce_select_i;
 // =========================================================
 
 // =============== Register Map instantiation ==============
@@ -92,10 +92,10 @@ module aplic_domain_regctl #(
   logic                               domaincfg_we;
   logic                               domaincfg_re;
   // Register sourcecfg
-  logic [NR_SRC:0][10:0]              sourcecfg_qi, sourcecfg_di, sourcecfg_aux_di;
-  logic [NR_SRC:0][10:0]              sourcecfg_o;
-  logic [NR_SRC:0]                    sourcecfg_we;
-  logic [NR_SRC:0]                    sourcecfg_re;
+  logic [NR_SRC-1:0][10:0]            sourcecfg_qi, sourcecfg_di, sourcecfg_aux_di;
+  logic [NR_SRC-1:0][10:0]            sourcecfg_o;
+  logic [NR_SRC-1:0]                  sourcecfg_we;
+  logic [NR_SRC-1:0]                  sourcecfg_re;
   // Register setip
   logic [NR_REG:0][31:0]              setip_qi, setip_di, sugg_setip_i;
   logic [NR_REG:0][31:0]              setip_o;
@@ -137,10 +137,10 @@ module aplic_domain_regctl #(
   logic                               clrienum_we;
   logic                               clrienum_re;
   // Register target
-  logic [NR_SRC:0][31:0]              target_qi, target_di, target_aux_di;
-  logic [NR_SRC:0][31:0]              target_o;
-  logic [NR_SRC:0]                    target_we;
-  logic [NR_SRC:0]                    target_re;
+  logic [NR_SRC-1:0][31:0]            target_qi, target_di, target_aux_di;
+  logic [NR_SRC-1:0][31:0]            target_o;
+  logic [NR_SRC-1:0]                  target_we;
+  logic [NR_SRC-1:0]                  target_re;
   // Register idelivery
   logic [NR_IDCs-1:0][0:0]            idelivery_qi, idelivery_di;
   logic [NR_IDCs-1:0][0:0]            idelivery_o;
@@ -335,7 +335,7 @@ module aplic_domain_regctl #(
   always_comb begin
     for (int i = 1; i < NR_SRC; i++) begin
         if(!((sourcecfg_qi[i][10] == DELEGATED) || 
-          !((sourcecfg_qi[i][10] == NON_DELEGATED) && (sourcecfg_qi[i][2:0] == INACTIVE)))) begin
+          ((sourcecfg_qi[i][10] == NON_DELEGATED) && (sourcecfg_qi[i][2:0] == INACTIVE)))) begin
           active_i[i/32][i%32] = INTP_ACTIVE;
         end else begin
           active_i[i/32][i%32] = INTP_NOT_ACTIVE; 
@@ -389,7 +389,7 @@ module aplic_domain_regctl #(
   // Set interrupt enable registers registers modifiers
   assign setienum_di    = (setienum_we) ? setienum_o : setienum_qi;
   assign clrienum_di    = (clrienum_we) ? clrienum_o : clrienum_qi;
-  for (genvar i = 0; i < NR_REG; i++) begin
+  for (genvar i = 0; i <= NR_REG; i++) begin
     assign clrie_di[i]       = (clrie_we[i])    ? clrie_o[i]    : clrie_qi[i];
   end
 
@@ -410,19 +410,19 @@ module aplic_domain_regctl #(
 
   /**==== setie logic ====*/
   always_comb begin
-    for (int i = 0; i < NR_REG; i++) begin
-      sugg_setie_i[i]                               = setie_qi[i];
+    for (int i = 0; i <= NR_REG; i++) begin
+      sugg_setie_i[i]                                   = setie_qi[i];
       case (setie_select_i)  
-        CLRIE       : sugg_setie_i[i]               = ~(clrie_qi[i] & setie_qi[i]);
-        SETIENUM    : sugg_setie_i[i][setienum_qi]  = 1'b1;
-        CLRIENUM    : sugg_setie_i[i][clrienum_qi]  = 1'b0;
-        W_SETIE     : sugg_setie_i[i]               = setie_o[i];
-        default     : sugg_setie_i[i]               = setie_qi[i];
+        CLRIE       : sugg_setie_i[i]                   = ~clrie_qi[i] & setie_qi[i];
+        SETIENUM    : sugg_setie_i[i][setienum_qi%32]   = ((setienum_qi/32) == i) ? 1'b1 : sugg_setie_i[i][setienum_qi%32];
+        CLRIENUM    : sugg_setie_i[i][clrienum_qi%32]   = ((clrienum_qi/32) == i) ? 1'b0 : sugg_setie_i[i][clrienum_qi%32];
+        W_SETIE     : sugg_setie_i[i]                   = setie_o[i];
+        default     : sugg_setie_i[i]                   = setie_qi[i];
       endcase
       /** Zero inactive sources */
-      setie_di[i] = sugg_setie_i[i] & active_i[i];
+      setie_di[i]                                       = sugg_setie_i[i] & active_i[i];
     end
-    setie_di[0][0] = 1'b0;
+    setie_di[0][0]                                      = 1'b0;
   end
 // ================================================================
 
@@ -430,13 +430,14 @@ module aplic_domain_regctl #(
   // Set interrupt pending registers modifiers
   assign setipnum_di    = (setipnum_we) ? setipnum_o : setipnum_qi;
   assign clripnum_di    = (clripnum_we) ? clripnum_o : clripnum_qi;
-  for (genvar i = 0; i < NR_REG; i++) begin
+  for (genvar i = 0; i <= NR_REG; i++) begin
     assign in_clrip_di[i]       = (in_clrip_we[i])    ? in_clrip_o[i]    : in_clrip_qi[i];
   end
 
   //==== Control Unit ====
   /** Prioritize writes from regmap*/
   always_comb begin
+    setip_select_i = DEFAULT;
     if (|setip_we) begin
       setip_select_i = W_SETIP;
     end else if (|in_clrip_we) begin
@@ -450,10 +451,10 @@ module aplic_domain_regctl #(
 
   //==== Setip Logic ====
   always_comb begin
-    for (int i = 0; i < NR_REG; i++) begin
-      sugg_setie_i[i] = setip_qi[i];
+    for (int i = 0; i <= NR_REG; i++) begin
+      sugg_setip_i[i] = setip_di[i];
       case (setip_select_i)       
-        CLRIP       : sugg_setip_i[i]           = ~(in_clrip_qi[i] & setip_qi[i]);
+        CLRIP       : sugg_setip_i[i]           = ~in_clrip_qi[i] & setip_di[i];
         SETIPNUM    : sugg_setip_i[i][setipnum_qi%32] = ((setipnum_qi/32) == i) ? 1'b1 : sugg_setip_i[i][setipnum_qi%32];
         CLRIPNUM    : sugg_setip_i[i][clripnum_qi%32] = ((clripnum_qi/32) == i) ? 1'b0 : sugg_setip_i[i][clripnum_qi%32];
         W_SETIP     : sugg_setip_i[i]           = setip_o[i];
@@ -469,9 +470,7 @@ module aplic_domain_regctl #(
     for (int i = 0; i < NR_IDCs; i++) begin
       if (claimi_re[i] == 1'b1) begin
         claimed_forwarded_i[topi_qi[i][16 +: NR_SRC_W]/32][topi_qi[i][16 +: NR_SRC_W]%32] = 1'b1;
-      end else begin
-        claimed_forwarded_i[i] = claimed_forwarded_i[i];
-      end
+      end 
     end
   end
 // ================================================================
@@ -494,7 +493,7 @@ module aplic_domain_regctl #(
     for (int i = 0; i < NR_IDCs; i++) begin
       ithreshold_di[i]  = (ithreshold_we[i]) ? ithreshold_o[i] : ithreshold_qi[i];
       idelivery_di[i]   = (idelivery_we[i]) ? idelivery_o[i] : idelivery_qi[i];
-      topi_di[i]        = (topi_update_i) ? i_topi_sugg[i] : topi_qi[i];
+      topi_di[i]        = (topi_update_i[i]) ? topi_sugg_i[i] : topi_qi[i];
       case (iforce_select_i[i])
         ZERO_FORCE: iforce_di[i]  = '0;
         W_FORCE: iforce_di[i]     = iforce_o[i]; 
@@ -512,7 +511,7 @@ module aplic_domain_regctl #(
     assign o_sourcecfg[i]         = sourcecfg_qi[i];
     assign o_target_q[i]          = target_qi[i];
   end
-  for (genvar i = 0; i < NR_REG; i++) begin
+  for (genvar i = 0; i <= NR_REG; i++) begin
     assign o_setip_q[i]           = setip_qi[i];
     assign o_setie_q[i]           = setie_qi[i];
     assign o_active[i]            = active_i[i];
@@ -526,13 +525,13 @@ module aplic_domain_regctl #(
   end
 
   /** Assign inputs to the corresponding registers */
-  for (genvar i = 0; i < NR_REG; i++) begin
+  for (genvar i = 0; i <= NR_REG; i++) begin
     assign setip_di[i]            = i_intp_pen[i];
     assign in_rectified_di[i]     = i_rectified_src[i];
   end
   for (genvar i = 0; i < NR_IDCs; i++) begin
     assign topi_sugg_i[i]         = i_topi_sugg[i];
-    assign topi_update_i          = i_topi_update;
+    assign topi_update_i[i]       = i_topi_update[i];
   end
 // ================================================================
 
@@ -555,7 +554,7 @@ module aplic_domain_regctl #(
         sourcecfg_qi[i] <= '0;
         target_qi[i] <= '0;
       end
-      for (int i = 0; i < NR_REG; i++) begin
+      for (int i = 0; i <= NR_REG; i++) begin
         setip_qi[i] <= '0;
         in_clrip_qi[i] <= '0;
         in_rectified_qi[i] <= '0;
@@ -585,7 +584,7 @@ module aplic_domain_regctl #(
           sourcecfg_qi[i] <= sourcecfg_di[i];
           target_qi[i] <= target_di[i];    
         end
-        for (int i = 0; i < NR_REG; i++) begin
+        for (int i = 0; i <= NR_REG; i++) begin
           setip_qi[i] <= setip_di[i];
           in_clrip_qi[i] <= in_clrip_di[i];
           in_rectified_qi[i] <= in_rectified_di[i]; 

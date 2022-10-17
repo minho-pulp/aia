@@ -46,8 +46,6 @@ class CInputs:
     setip               = 0
     active              = 0
     claimed             = 0
-    succ_w_clr          = 0
-    forwarded           = 0
 
 class CInternals:
     rectified_src       = 0
@@ -96,7 +94,7 @@ async def debug_config(dut):
     # Set setip, a 2D array, with 0xbebecafe
     await Timer(1, units="ns")
     input.setip = set_or_reg(input.setip, 0xbebecafe, NR_BITS_SRC, intp.SRC[0]) 
-    dut.i_setip.value           = input.setip 
+    dut.i_sugg_setip.value           = input.setip 
 
     # Set active, a 2D array, with 0xbebecafe
     await Timer(1, units="ns")
@@ -107,16 +105,6 @@ async def debug_config(dut):
     await Timer(1, units="ns")
     input.claimed = set_or_reg(input.claimed, 0xbebecafe, NR_BITS_SRC, intp.SRC[0]) 
     dut.i_claimed.value         = input.claimed 
-
-    # Set forwarded, a 2D array, with 0xbebecafe
-    await Timer(1, units="ns")
-    input.forwarded = set_or_reg(input.forwarded, 0xbebecafe, NR_BITS_SRC, intp.SRC[0]) 
-    dut.i_forwarded.value       = input.forwarded 
-
-    # Set forwarded, a 2D array, with 0xbebecafe
-    await Timer(1, units="ns")
-    input.succ_w_clr = set_or_reg(input.succ_w_clr, 0xbebecafe, NR_BITS_SRC, intp.SRC[0]) 
-    dut.i_succ_w_clr.value      = input.succ_w_clr
 
 async def test_control_unit(dut):
     # Set Domain config Delivery Mode to 0: meaning Direct 
@@ -148,17 +136,11 @@ async def test_gatway_source1(dut):
 
     # Source 1 is not pending
     input.setip                 = set_or_reg(input.setip, 0, SRC_PER_BIT, intp.SRC[1])
-    dut.i_setip.value           = input.setip
+    dut.i_sugg_setip.value           = input.setip
 
     # Source 1 was not claimed
     input.claimed               = set_or_reg(input.claimed, 0, SRC_PER_BIT, intp.SRC[1])
     dut.i_claimed.value         = input.claimed
-    # Source 1 was not forwarded
-    input.forwarded             = set_or_reg(input.forwarded, 0, SRC_PER_BIT, intp.SRC[1])
-    dut.i_forwarded.value       = input.forwarded
-    # Source 1 was not cleared
-    input.succ_w_clr            = set_or_reg(input.succ_w_clr, 0, SRC_PER_BIT, intp.SRC[1])
-    dut.i_succ_w_clr.value      = input.succ_w_clr
 
     # Make Source 1 active
     input.active                = set_or_reg(input.active, 1, SRC_PER_BIT, intp.SRC[1])
@@ -172,7 +154,7 @@ async def test_gatway_source1(dut):
     # After it receives the interrupt, the pending bit becomes one
     aux                         = read_bit_from_reg(dut.o_intp_pen, intp.SRC[1]) 
     input.setip                 = set_or_reg(input.setip, aux, SRC_PER_BIT, intp.SRC[1])
-    dut.i_setip.value           = input.setip
+    dut.i_sugg_setip.value           = input.setip
     # Clear the source interrupt
     input.source                = set_reg(input.source, 0, SRC_PER_BIT, intp.SRC[1])
     dut.i_sources.value         = input.source
@@ -218,9 +200,7 @@ async def gateway_unit_test(dut):
     await Timer(15, units="ns")
     #TODO Add asserts for outputs
     assert dut.i_sourcecfg.value    == input.sourcecfg  , "Oh boy, you mess it up in sourcecfg!"
-    assert dut.i_setip.value        == input.setip      , "Oh boy, you mess it up in setip!"
+    assert dut.i_sugg_setip.value        == input.setip      , "Oh boy, you mess it up in setip!"
     assert dut.i_active.value       == input.active     , "Oh boy, you mess it up in active!"
     assert dut.i_claimed.value      == input.claimed    , "Oh boy, you mess it up in claimed!"
-    assert dut.i_forwarded.value    == input.forwarded  , "Oh boy, you mess it up in forwarded!"
-    assert dut.i_succ_w_clr.value   == input.succ_w_clr , "Oh boy, you mess it up in succ_w_clr!"
     assert dut.aplic_domain_gateway_i.new_intp_src.value == internal.new_intp_src  , "Oh boy, you mess it up in new_intp_src!"

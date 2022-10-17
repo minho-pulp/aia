@@ -12,9 +12,10 @@
 *
 */
 module aplic_domain_gateway #(
-    parameter int NR_SRC = 32,
-    parameter int NR_BITS_SRC = (NR_SRC > 31)? 32 : NR_SRC,
-    parameter int NR_REG = (NR_SRC-1)/32  
+    parameter int                                     NR_SRC = 32,
+    // DO NOT EDIT BY PARAMETER
+    parameter int                                     NR_BITS_SRC = (NR_SRC > 32)? 32 : NR_SRC,
+    parameter int                                     NR_REG = (NR_SRC-1)/32  
 ) (
     input   logic                                     i_clk,
     input   logic                                     ni_rst,
@@ -45,9 +46,8 @@ localparam FROM_RECTIFIER       = 1'b0;
 localparam FROM_EDGE_DETECTOR   = 1'b1;
 
 /** Internal signals*/
-logic [NR_SRC-1:0]                      rectified_src_i;
+logic [NR_SRC-1:0]                      rectified_src_i, rectified_src_qi;
 logic [NR_REG:0][NR_BITS_SRC-1:0]       new_intp_i;
-logic [NR_SRC-1:0]                      rectified_src_qi;
 /** Control signals */
 logic [NR_SRC-1:0]                      new_intp_src;
 logic [NR_SRC-1:0][2:0]                 intp_pen_src_i;
