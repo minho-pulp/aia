@@ -1,6 +1,6 @@
 /** 
 *   Name: APLIC domain register map (generic)
-*   Date: 2022-10-14 16:59:49.913859
+*   Date: 2022-10-17 18:28:55.796749
 *   Author: F.Marques <fmarques_00@protonmail.com>
 * 
 *   Description: This module is a generic APLIC domain register map.
@@ -10,10 +10,10 @@
 module aplic_regmap #(
    parameter int                       DOMAIN_ADDR = 32'hc000000,
    parameter int                       NR_SRC      = 32,
-   parameter int                       NR_REG      = (NR_SRC-1)/32,
+   parameter int                       NR_REG      = 0,
    parameter int                       MIN_PRIO    = 6,
    parameter int                       IPRIOLEN    = 3, //(MIN_PRIO == 1) ? 1 : $clog2(MIN_PRIO),
-   parameter int                       NR_IDCs     = 2
+   parameter int                       NR_IDCs     = 1
 ) (
   // Register: domaincfg
   input  logic [0:0][31:0]      i_domaincfg,
@@ -21,10 +21,10 @@ module aplic_regmap #(
   output logic [0:0]            o_domaincfg_we,
   output logic [0:0]            o_domaincfg_re,
   // Register: sourcecfg
-  input  logic [NR_SRC-1:0][10:0]      i_sourcecfg,
-  output logic [NR_SRC-1:0][10:0]      o_sourcecfg,
-  output logic [NR_SRC-1:0]            o_sourcecfg_we,
-  output logic [NR_SRC-1:0]            o_sourcecfg_re,
+  input  logic [NR_SRC-1:0][10:0]    i_sourcecfg,
+  output logic [NR_SRC-1:0][10:0]    o_sourcecfg,
+  output logic [NR_SRC-1:0]          o_sourcecfg_we,
+  output logic [NR_SRC-1:0]          o_sourcecfg_re,
   // Register: mmsiaddrcfg
   input  logic [0:0][31:0]      i_mmsiaddrcfg,
   output logic [0:0][31:0]      o_mmsiaddrcfg,
@@ -101,10 +101,10 @@ module aplic_regmap #(
   output logic [0:0]            o_genmsi_we,
   output logic [0:0]            o_genmsi_re,
   // Register: target
-  input  logic [NR_SRC-1:0][31:0]      i_target,
-  output logic [NR_SRC-1:0][31:0]      o_target,
-  output logic [NR_SRC-1:0]            o_target_we,
-  output logic [NR_SRC-1:0]            o_target_re,
+  input  logic [NR_SRC-1:0][31:0]    i_target,
+  output logic [NR_SRC-1:0][31:0]    o_target,
+  output logic [NR_SRC-1:0]          o_target_we,
+  output logic [NR_SRC-1:0]          o_target_re,
   // Register: idelivery
   input  logic [NR_IDCs-1:0][0:0]    i_idelivery,
   output logic [NR_IDCs-1:0][0:0]    o_idelivery,
@@ -134,7 +134,7 @@ always_comb begin
   o_resp.ready = 1'b1;
   o_resp.rdata = '0;
   o_resp.error = '0;
-  o_domaincfg = '0;
+  o_domaincfg = 32'h80000000;
   o_domaincfg_we = '0;
   o_domaincfg_re = '0;
   o_sourcecfg = '0;
@@ -524,25 +524,13 @@ always_comb begin
           o_idelivery[0][0:0]     = i_req.wdata[0:0];
           o_idelivery_we[0]      = 1'b1;
         end
-        DOMAIN_ADDR + 32'h4020: begin
-          o_idelivery[1][0:0]     = i_req.wdata[0:0];
-          o_idelivery_we[1]      = 1'b1;
-        end
         DOMAIN_ADDR + 32'h4004: begin
           o_iforce[0][0:0]     = i_req.wdata[0:0];
           o_iforce_we[0]      = 1'b1;
         end
-        DOMAIN_ADDR + 32'h4024: begin
-          o_iforce[1][0:0]     = i_req.wdata[0:0];
-          o_iforce_we[1]      = 1'b1;
-        end
         DOMAIN_ADDR + 32'h4008: begin
           o_ithreshold[0][IPRIOLEN-1:0]     = i_req.wdata[IPRIOLEN-1:0];
           o_ithreshold_we[0]      = 1'b1;
-        end
-        DOMAIN_ADDR + 32'h4028: begin
-          o_ithreshold[1][IPRIOLEN-1:0]     = i_req.wdata[IPRIOLEN-1:0];
-          o_ithreshold_we[1]      = 1'b1;
         end
         default: o_resp.error = 1'b1;
       endcase
@@ -872,41 +860,21 @@ always_comb begin
           o_resp.rdata[0:0]     = i_idelivery[0][0:0];
           o_idelivery_re[0]      = 1'b1;
         end
-        DOMAIN_ADDR + 32'h4020: begin
-          o_resp.rdata[0:0]     = i_idelivery[1][0:0];
-          o_idelivery_re[1]      = 1'b1;
-        end
         DOMAIN_ADDR + 32'h4004: begin
           o_resp.rdata[0:0]     = i_iforce[0][0:0];
           o_iforce_re[0]      = 1'b1;
-        end
-        DOMAIN_ADDR + 32'h4024: begin
-          o_resp.rdata[0:0]     = i_iforce[1][0:0];
-          o_iforce_re[1]      = 1'b1;
         end
         DOMAIN_ADDR + 32'h4008: begin
           o_resp.rdata[IPRIOLEN-1:0]     = i_ithreshold[0][IPRIOLEN-1:0];
           o_ithreshold_re[0]      = 1'b1;
         end
-        DOMAIN_ADDR + 32'h4028: begin
-          o_resp.rdata[IPRIOLEN-1:0]     = i_ithreshold[1][IPRIOLEN-1:0];
-          o_ithreshold_re[1]      = 1'b1;
-        end
         DOMAIN_ADDR + 32'h4018: begin
           o_resp.rdata[25:0]     = i_topi[0][25:0];
           o_topi_re[0]      = 1'b1;
         end
-        DOMAIN_ADDR + 32'h4038: begin
-          o_resp.rdata[25:0]     = i_topi[1][25:0];
-          o_topi_re[1]      = 1'b1;
-        end
         DOMAIN_ADDR + 32'h401c: begin
           o_resp.rdata[25:0]     = i_claimi[0][25:0];
           o_claimi_re[0]      = 1'b1;
-        end
-        DOMAIN_ADDR + 32'h403c: begin
-          o_resp.rdata[25:0]     = i_claimi[1][25:0];
-          o_claimi_re[1]      = 1'b1;
         end
         default: o_resp.error = 1'b1;
       endcase

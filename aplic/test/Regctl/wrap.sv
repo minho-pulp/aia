@@ -34,7 +34,7 @@ module aplic_domain_regctl_wrapper #(
     output  logic                                       o_domaincfgIE,
     output  logic [((NR_REG+1)*NR_BITS_SRC)-1:0]        o_setip_q,
     output  logic [((NR_REG+1)*NR_BITS_SRC)-1:0]        o_setie_q,
-    output  logic [(NR_SRC*32)-1:0]                       o_target_q,
+    output  logic [(NR_SRC*32)-1:0]                     o_target_q,
         /**  interface for direct mode */
     output  logic [NR_IDCs-1:0]                         o_idelivery,
     output  logic [NR_IDCs-1:0]                         o_iforce,
@@ -48,7 +48,7 @@ logic                                       clk_i;
 logic                                       rst_ni;
 reg_intf::reg_intf_req_a32_d32              i_req;
 reg_intf::reg_intf_resp_d32                 o_resp;
-logic [NR_SRC-1:0][10:0]                      sourcecfg_o;
+logic [NR_SRC-1:0][10:0]                    sourcecfg_o;
 logic [NR_REG:0][NR_BITS_SRC-1:0]           sugg_setip_o;
 logic                                       domaincfgDM_o;
 logic [NR_REG:0][NR_BITS_SRC-1:0]           active_o;
@@ -58,7 +58,7 @@ logic [NR_REG:0][NR_BITS_SRC-1:0]           rectified_src_i;
 logic                                       domaincfgIE_o;
 logic [NR_REG:0][NR_BITS_SRC-1:0]           setip_q_o;
 logic [NR_REG:0][NR_BITS_SRC-1:0]           setie_q_o;
-logic [NR_SRC-1:0][31:0]                      target_q_o;
+logic [NR_SRC-1:0][31:0]                    target_q_o;
 logic [NR_IDCs-1:0][0:0]                    idelivery_o;
 logic [NR_IDCs-1:0][0:0]                    iforce_o;
 logic [NR_IDCs-1:0][IPRIOLEN-1:0]           ithreshold_o;
