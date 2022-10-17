@@ -185,6 +185,10 @@ async def test_active(dut):
     outputs.o_sourcecfg = set_reg(outputs.o_sourcecfg, 4, SRCCFG_W, intp.SRC[13])
     #...
 
+async def test_domaincfg(dut):
+    # Disable domain
+    axi_write_reg(dut, APLIC_BASE, 1)
+    await Timer(3, units="ns")
 
 async def generate_clock(dut):
     """Generate clock pulses."""
@@ -215,7 +219,8 @@ async def regctl_unit_test(dut):
 
     #await cocotb.start(debug_config(dut))
     #await cocotb.start(test_pending(dut))
-    await cocotb.start(test_active(dut))
+    #await cocotb.start(test_active(dut))
+    await cocotb.start(test_domaincfg(dut))
     
     await Timer(11, units="ns")
     
