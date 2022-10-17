@@ -119,7 +119,7 @@ class AddrMap:
     output += "   parameter int                       NR_SRC      = {},\n".format(nr_src)
     output += "   parameter int                       NR_REG      = {},\n".format(nr_reg_needed_for_interrupt)
     output += "   parameter int                       MIN_PRIO    = {},\n".format(min_prio)
-    output += "   parameter int                       IPRIOLEN    = {},\n".format(priority_width)
+    output += "   parameter int                       IPRIOLEN    = {}, //(MIN_PRIO == 1) ? 1 : $clog2(MIN_PRIO),\n".format(priority_width)
     output += "   parameter int                       NR_IDCs     = {}\n".format(nr_idc)
     output += ") (\n"
     for i in self.ports:
@@ -522,7 +522,7 @@ if __name__ == "__main__":
     addrmap.addEntry(domainAddr, aplic_base, mode + "domaincfg", mode + "domaincfg", Access.RW, REGISTER_DEF_SIZE32)
 
     # sourcecfg registers
-    addrmap.addEntriesMacro(nr_src_eff, "NR_SRC", SOURCES_ENTRY, sourcecfgAddr, aplic_base, mode + "sourcecfg", mode + "sourcecfg", Access.RW, SOURCECFG_SIZE)
+    addrmap.addEntriesMacro(nr_src_eff, "NR_SRC", REG_MACRO_ENTRY, sourcecfgAddr, aplic_base, mode + "sourcecfg", mode + "sourcecfg", Access.RW, SOURCECFG_SIZE)
     
     # Only implemented at M-Mode
     if(domain_mode == MMODE):
@@ -613,7 +613,7 @@ if __name__ == "__main__":
     addrmap.addEntry(genmsiAddr, aplic_base, mode + "genmsi", mode + "genmsi", Access.RW, REGISTER_DEF_SIZE32)
 
     # target registers
-    addrmap.addEntriesMacro(nr_src_eff, "NR_SRC", SOURCES_ENTRY, targetAddr, aplic_base, mode + "target", mode + "target", Access.RW, REGISTER_DEF_SIZE32)
+    addrmap.addEntriesMacro(nr_src_eff, "NR_SRC", REG_MACRO_ENTRY, targetAddr, aplic_base, mode + "target", mode + "target", Access.RW, REGISTER_DEF_SIZE32)
     
     # IDCs
     addIDC(aplic_base + aplic_idc_base, nr_idc, mode)
