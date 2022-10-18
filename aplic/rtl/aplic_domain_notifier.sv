@@ -14,7 +14,7 @@ module aplic_domain_notifier #(
     input   logic                                   i_domaincfgIE,
     input   logic [NR_REG:0][NR_BITS_SRC-1:0]       i_setip_q,
     input   logic [NR_REG:0][NR_BITS_SRC-1:0]       i_setie_q,
-    input   logic [NR_SRC-1:0][31:0]                i_target_q,
+    input   logic [NR_SRC-1:1][31:0]                i_target_q,
     /**  interface for direct mode */
     input   logic [NR_IDCs-1:0][0:0]                i_idelivery,
     input   logic [NR_IDCs-1:0][0:0]                i_iforce,
@@ -52,7 +52,7 @@ if(MODE == "DIRECT") begin
                 /** "interrupt sources with priority numbers P and higher DO NOT
                 *   contribute to signaling interrupts to the hart" 
                 *   If threshold is 0 all insterrupt can contribute 
-                *   Finally check if the current pend/en intp has a higher (smaller number)
+                *   Finally, check if the current pend/en intp has a higher (smaller number)
                 *   priority than the previous pend/en intp. */
                 if(((i_target_q[i][2:0] < i_ithreshold[i_target_q[i][TARGET_HART_IDX +: NR_IDC_W]]) || 
                     (i_ithreshold[i_target_q[i][TARGET_HART_IDX +: NR_IDC_W]] == 0)) &&

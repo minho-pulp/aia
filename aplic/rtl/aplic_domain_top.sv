@@ -5,7 +5,6 @@
 * 
 *   Description: This module is the APLIC domain.
 *                It is comprised by 3 submodules: gatway, notifier and register map.
-*   Disclaimer:  This file was automatically generated. Edit at your own risk.
 */ 
 module aplic_domain_top #(
    parameter int                           DOMAIN_ADDR   = 32'hc000000,
@@ -29,7 +28,7 @@ module aplic_domain_top #(
 );
 // ================== INTERCONNECTION SIGNALS =====================
    /** Gateway */
-   logic [NR_SRC-1:0][10:0]                    sourcecfg_i;
+   logic [NR_SRC-1:1][10:0]                    sourcecfg_i;
    logic [NR_REG:0][NR_BITS_SRC-1:0]           sugg_setip_i;
    logic                                       domaincfgDM_i;
    logic [NR_REG:0][NR_BITS_SRC-1:0]           active_i;
@@ -40,7 +39,7 @@ module aplic_domain_top #(
    logic                                       domaincfgIE_i;
    logic [NR_REG:0][NR_BITS_SRC-1:0]           setip_q_i;
    logic [NR_REG:0][NR_BITS_SRC-1:0]           setie_q_i;
-   logic [NR_SRC-1:0][31:0]                    target_q_i;
+   logic [NR_SRC-1:1][31:0]                    target_q_i;
       /**  interface for direct mode */
    logic [NR_IDCs-1:0][0:0]                     idelivery_i;
    logic [NR_IDCs-1:0][0:0]                     iforce_i;

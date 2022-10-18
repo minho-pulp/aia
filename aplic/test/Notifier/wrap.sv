@@ -41,7 +41,7 @@ logic                                   rst_ni;
 logic                                   domaincfgIE_i;
 logic [NR_REG:0][NR_BITS_SRC-1:0]       setip_q_i;
 logic [NR_REG:0][NR_BITS_SRC-1:0]       setie_q_i;
-logic [NR_SRC-1:0][31:0]                target_q_i;
+logic [NR_SRC-1:1][31:0]                target_q_i;
 /**  interface for direct mode */
 logic [NR_IDCs-1:0]                      idelivery_i;
 logic [NR_IDCs-1:0]                      iforce_i;
@@ -62,7 +62,7 @@ assign rst_ni           = ni_rst;
 assign domaincfgIE_i    = i_domaincfgIE;
 
 /** Converts 1D array into 2D array */
-for (genvar i = 0; i < NR_SRC; i++) begin
+for (genvar i = 1; i < NR_SRC; i++) begin
     assign target_q_i[i]         = i_target_q[i*32 +: 32];
 end
 for (genvar i = 0; i <= NR_REG; i++) begin

@@ -28,7 +28,7 @@ module aplic_domain_gateway_wrapper #(
 logic                                     clk_i;
 logic                                     rst_ni;
 logic [NR_SRC-1:0]                        sources_i;
-logic [NR_SRC-1:0][10:0]                  sourcecfg_i;
+logic [NR_SRC-1:1][10:0]                  sourcecfg_i;
 logic [NR_REG:0][NR_BITS_SRC-1:0]         sugg_setip_i;
 logic                                     domaincfgDM_i;
 logic [NR_REG:0][NR_BITS_SRC-1:0]         active_i;
@@ -44,6 +44,8 @@ assign domaincfgDM_i    = i_domaincfgDM;
 /** Converts 1D array into 2D array */
 for (genvar i = 0; i < NR_SRC; i++) begin
     assign sources_i[i]         = i_sources[i];
+end
+for (genvar i = 1; i < NR_SRC-1; i++) begin
     assign sourcecfg_i[i]       = i_sourcecfg[i*11 +: 11];
 end
 for (genvar i = 0; i <= NR_REG; i++) begin

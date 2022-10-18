@@ -27,7 +27,7 @@ module aplic_domain_regctl #(
     input   reg_intf::reg_intf_req_a32_d32              i_req,
     output  reg_intf::reg_intf_resp_d32                 o_resp,
     /** Gateway */
-    output  logic [NR_SRC-1:0][10:0]                    o_sourcecfg,
+    output  logic [NR_SRC-1:1][10:0]                    o_sourcecfg,
     output  logic [NR_REG:0][NR_BITS_SRC-1:0]           o_sugg_setip,
     output  logic                                       o_domaincfgDM,
     output  logic [NR_REG:0][NR_BITS_SRC-1:0]           o_active,
@@ -38,7 +38,7 @@ module aplic_domain_regctl #(
     output  logic                                       o_domaincfgIE,
     output  logic [NR_REG:0][NR_BITS_SRC-1:0]           o_setip_q,
     output  logic [NR_REG:0][NR_BITS_SRC-1:0]           o_setie_q,
-    output  logic [NR_SRC-1:0][31:0]                    o_target_q,
+    output  logic [NR_SRC-1:1][31:0]                    o_target_q,
         /**  interface for direct mode */
     output  logic [NR_IDCs-1:0][0:0]                    o_idelivery,
     output  logic [NR_IDCs-1:0][0:0]                    o_iforce,
@@ -92,10 +92,10 @@ module aplic_domain_regctl #(
   logic                               domaincfg_we;
   logic                               domaincfg_re;
   // Register sourcecfg
-  logic [NR_SRC-1:0][10:0]            sourcecfg_qi, sourcecfg_di, sourcecfg_aux_di;
-  logic [NR_SRC-1:0][10:0]            sourcecfg_o;
-  logic [NR_SRC-1:0]                  sourcecfg_we;
-  logic [NR_SRC-1:0]                  sourcecfg_re;
+  logic [NR_SRC-1:1][10:0]            sourcecfg_qi, sourcecfg_di, sourcecfg_aux_di;
+  logic [NR_SRC-1:1][10:0]            sourcecfg_o;
+  logic [NR_SRC-1:1]                  sourcecfg_we;
+  logic [NR_SRC-1:1]                  sourcecfg_re;
   // Register setip
   logic [NR_REG:0][31:0]              setip_qi, setip_di, sugg_setip_i;
   logic [NR_REG:0][31:0]              setip_o;
@@ -137,10 +137,10 @@ module aplic_domain_regctl #(
   logic                               clrienum_we;
   logic                               clrienum_re;
   // Register target
-  logic [NR_SRC-1:0][31:0]            target_qi, target_di, target_aux_di;
-  logic [NR_SRC-1:0][31:0]            target_o;
-  logic [NR_SRC-1:0]                  target_we;
-  logic [NR_SRC-1:0]                  target_re;
+  logic [NR_SRC-1:1][31:0]            target_qi, target_di, target_aux_di;
+  logic [NR_SRC-1:1][31:0]            target_o;
+  logic [NR_SRC-1:1]                  target_we;
+  logic [NR_SRC-1:1]                  target_re;
   // Register idelivery
   logic [NR_IDCs-1:0][0:0]            idelivery_qi, idelivery_di;
   logic [NR_IDCs-1:0][0:0]            idelivery_o;

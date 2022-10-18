@@ -20,7 +20,7 @@ module aplic_domain_gateway #(
     input   logic                                     i_clk,
     input   logic                                     ni_rst,
     input   logic [NR_SRC-1:0]                        i_sources,
-    input   logic [NR_SRC-1:0][10:0]                  i_sourcecfg,
+    input   logic [NR_SRC-1:1][10:0]                  i_sourcecfg,
     input   logic [NR_REG:0][NR_BITS_SRC-1:0]         i_sugg_setip,
     input   logic                                     i_domaincfgDM,
     input   logic [NR_REG:0][NR_BITS_SRC-1:0]         i_active,

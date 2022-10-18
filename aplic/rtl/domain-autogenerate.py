@@ -16,7 +16,8 @@ import datetime
 NORMAL_ENTRY          = 0
 REG_MACRO_ENTRY       = 1
 REG_BIT_W_MACRO_ENTRY = 2
-SOURCES_ENTRY         = 3
+REG_DEPEND_ENTRY      = 3
+SRC_DEPEND_ENTRY      = 4
 
 MAX_DEVICES         = 1023
 MAX_SOURCES         = 1023
@@ -43,12 +44,13 @@ class Access(Enum):
 class AddrMapEntry(object):
 
   """Represents an Entry in an Address Map"""
-  def __init__(self, addr, name, description, access, width):
+  def __init__(self, addr, name, description, access, width, start_bit):
     super(AddrMapEntry, self).__init__()
     self.addr = addr
     self.description = description
     self.access = access
     self.width = width
+    self.start_bit = start_bit
     self.name = name
 
   def __str__(self):
@@ -67,7 +69,7 @@ class AddrMap:
 
   def addEntries(self, num, addr, addr_base, name, description, access, width):
     # register port
-    self.ports.append((name, num, width, access, 0))
+    self.ports.append((name, num, width, access, 0, 0))
     for i in range(0, num):
       effect_addr = addr(i, addr_base)
       # we need to split the entry into multiple aligned entries as otherwise we would
@@ -75,33 +77,33 @@ class AddrMap:
       if (width / self.access_width) > 1.0:
         for i in range(0, int(ceil(width / self.access_width))):
           if (width - self.access_width * i < self.access_width):
-            self.addrmap.append(AddrMapEntry(effect_addr + int(self.access_width/8) * i,  name, description.format(i), access, width - self.access_width * i))
+            self.addrmap.append(AddrMapEntry(effect_addr + int(self.access_width/8) * i,  name, description.format(i), access, width - self.access_width * i, 0))
           else:
-            self.addrmap.append(AddrMapEntry(effect_addr + int(self.access_width/8) * i,  name, description.format(i), access, self.access_width))
+            self.addrmap.append(AddrMapEntry(effect_addr + int(self.access_width/8) * i,  name, description.format(i), access, self.access_width, 0))
       else:
-        self.addrmap.append(AddrMapEntry(effect_addr, name, description.format(i), access, width))
+        self.addrmap.append(AddrMapEntry(effect_addr, name, description.format(i), access, width, 0))
 
   def addEntry(self, addr, addr_base, name, description, access, width):
     self.addEntries(1, addr, addr_base, name, description, access, width)
 
-  def addEntriesMacro(self, num, macro, macro_type, addr, addr_base, name, description, access, width):
+  def addEntriesMacro(self, num, macro, macro_type, addr, addr_base, name, description, access, width, start_bit = 0):
     # register port
-    self.ports.append((name, macro, width, access, macro_type))
+    self.ports.append((name, macro, width, access, macro_type, start_bit))
     for i in range(0, num):
       effect_addr = addr(i, addr_base)
       # we need to split the entry into multiple aligned entries as otherwise we would
       # violate the access_width constraints
-      if (macro_type == 1) | (macro_type == 3):
+      if (macro_type == 1) | (macro_type == 3) | (macro_type == 4):
         if (width / self.access_width) > 1.0:
           for i in range(0, int(ceil(width / self.access_width))):
             if (width - self.access_width * i < self.access_width):
-              self.addrmap.append(AddrMapEntry(effect_addr + int(self.access_width/8) * i,  name, description.format(i), access, width - self.access_width * i))
+              self.addrmap.append(AddrMapEntry(effect_addr + int(self.access_width/8) * i,  name, description.format(i), access, width - self.access_width * i, start_bit))
             else:
-              self.addrmap.append(AddrMapEntry(effect_addr + int(self.access_width/8) * i,  name, description.format(i), access, self.access_width))
+              self.addrmap.append(AddrMapEntry(effect_addr + int(self.access_width/8) * i,  name, description.format(i), access, self.access_width, start_bit))
         else:
-          self.addrmap.append(AddrMapEntry(effect_addr, name, description.format(i), access, width))
+          self.addrmap.append(AddrMapEntry(effect_addr, name, description.format(i), access, width, start_bit))
       elif macro_type == 2:
-        self.addrmap.append(AddrMapEntry(effect_addr, name, description.format(i), access, width))
+        self.addrmap.append(AddrMapEntry(effect_addr, name, description.format(i), access, width, start_bit))
 
   """Dump Verilog for Register Map"""
   def dumpRegmap(self):
@@ -116,7 +118,7 @@ class AddrMap:
     output += "*/ \n"
     output += "module {} #(\n".format(regmap_name)
     output += "   parameter int                       DOMAIN_ADDR = 32'h{},\n".format(hex(addr)[2:])
-    output += "   parameter int                       NR_SRC      = {},\n".format(nr_src)
+    output += "   parameter int                       NR_SRC      = {},\n".format(nr_src_eff)
     output += "   parameter int                       NR_REG      = {},\n".format(nr_reg_needed_for_interrupt)
     output += "   parameter int                       MIN_PRIO    = {},\n".format(min_prio)
     output += "   parameter int                       IPRIOLEN    = {}, //(MIN_PRIO == 1) ? 1 : $clog2(MIN_PRIO),\n".format(priority_width)
@@ -136,9 +138,12 @@ class AddrMap:
           case 2: #REG_BIT_W_MACRO_ENTRY
             output += "  input  logic [{}-1:0][{}-1:0]  i_{},\n".format(i[1], i[2], i[0])
             output += "  output logic [{}-1:0]          o_{}_re,\n".format(i[1], i[0])
-          case 3: #SOURCES_ENTRY
+          case 3: #REG_DEPEND_ENTRY
             output += "  input  logic [{}:0][{}:0]      i_{},\n".format(i[1], i[2]-1, i[0])
             output += "  output logic [{}:0]            o_{}_re,\n".format(i[1], i[0])
+          case 4: #SRC_DEPEND_ENTRY
+            output += "  input  logic [{}-1:{}][{}:0]    i_{},\n".format(i[1], i[5], i[2]-1, i[0])
+            output += "  output logic [{}-1:{}]          o_{}_re,\n".format(i[1], i[5], i[0])
       elif (i[3] == Access.RW) | (i[3] == Access.WAR0):
         match i[4]:
           case 0: #NORMAL_ENTRY
@@ -156,11 +161,16 @@ class AddrMap:
             output += "  output logic [{}-1:0][{}-1:0]  o_{},\n".format(i[1], i[2], i[0])
             output += "  output logic [{}-1:0]          o_{}_we,\n".format(i[1], i[0])
             output += "  output logic [{}-1:0]          o_{}_re,\n".format(i[1], i[0])
-          case 3: #SOURCES_ENTRY
+          case 3: #REG_DEPEND_ENTRY
             output += "  input  logic [{}:0][{}:0]      i_{},\n".format(i[1], i[2]-1, i[0])
             output += "  output logic [{}:0][{}:0]      o_{},\n".format(i[1], i[2]-1, i[0])
             output += "  output logic [{}:0]            o_{}_we,\n".format(i[1], i[0])
             output += "  output logic [{}:0]            o_{}_re,\n".format(i[1], i[0])
+          case 4: #SRC_DEPEND_ENTRY
+            output += "  input  logic [{}-1:{}][{}:0]    i_{},\n".format(i[1], i[5], i[2]-1, i[0])
+            output += "  output logic [{}-1:{}][{}:0]    o_{},\n".format(i[1], i[5], i[2]-1, i[0])
+            output += "  output logic [{}-1:{}]          o_{}_we,\n".format(i[1], i[5], i[0])
+            output += "  output logic [{}-1:{}]          o_{}_re,\n".format(i[1], i[5], i[0])
 
     output += "  // Bus Interface\n"
     output += "  input  reg_intf::reg_intf_req_a32_d32 i_req,\n"
@@ -174,7 +184,7 @@ class AddrMap:
       if i[3] != Access.RO:
         output += "  o_{} = '0;\n".format(i[0])
         output += "  o_{}_we = '0;\n".format(i[0])
-        output += "  o_{}_re = '0;\n".format(i[0])
+      output += "  o_{}_re = '0;\n".format(i[0])
     output += "  if (i_req.valid) begin\n"
     output += "    if (i_req.write) begin\n"
     output += "      unique case(i_req.addr)\n"
@@ -184,13 +194,14 @@ class AddrMap:
       if i.access != Access.RO:
         if last_name != i.name:
           j = 0
-        output += "        DOMAIN_ADDR + {}'h{}: begin\n".format(self.access_width, hex(i.addr - addr)[2:])
-        if type(i.width) is str:
-          output += "          o_{}[{}][{}-1:0]     = i_req.wdata[{}-1:0];\n".format(i.name, j, i.width, i.width)
-        else:  
-          output += "          o_{}[{}][{}:0]     = i_req.wdata[{}:0];\n".format(i.name, j, i.width - 1, i.width - 1)
-        output += "          o_{}_we[{}]      = 1'b1;\n".format(i.name, j)
-        output += "        end\n"
+        if (j >= i.start_bit) :
+          output += "        DOMAIN_ADDR + {}'h{}: begin\n".format(self.access_width, hex(i.addr - addr)[2:])
+          if type(i.width) is str:
+            output += "          o_{}[{}][{}-1:0]     = i_req.wdata[{}-1:0];\n".format(i.name, j, i.width, i.width)
+          else:  
+            output += "          o_{}[{}][{}:0]     = i_req.wdata[{}:0];\n".format(i.name, j, i.width - 1, i.width - 1)
+          output += "          o_{}_we[{}]      = 1'b1;\n".format(i.name, j)
+          output += "        end\n"
         j += 1
         last_name = i.name
     output += "        default: o_resp.error = 1'b1;\n"
@@ -202,13 +213,14 @@ class AddrMap:
     for i in self.addrmap:
       if last_name != i.name:
         j = 0
-      output += "        DOMAIN_ADDR + {}'h{}: begin\n".format(self.access_width, hex(i.addr - addr)[2:])
-      if type(i.width) is str:
-        output += "          o_resp.rdata[{}-1:0]     = i_{}[{}][{}-1:0];\n".format(i.width, i.name, j, i.width)
-      else:
-        output += "          o_resp.rdata[{}:0]     = i_{}[{}][{}:0];\n".format(i.width - 1, i.name, j, i.width - 1)
-      output += "          o_{}_re[{}]      = 1'b1;\n".format(i.name, j)
-      output += "        end\n"
+      if (j >= i.start_bit) :
+        output += "        DOMAIN_ADDR + {}'h{}: begin\n".format(self.access_width, hex(i.addr - addr)[2:])
+        if type(i.width) is str:
+          output += "          o_resp.rdata[{}-1:0]     = i_{}[{}][{}-1:0];\n".format(i.width, i.name, j, i.width)
+        else:
+          output += "          o_resp.rdata[{}:0]     = i_{}[{}][{}:0];\n".format(i.width - 1, i.name, j, i.width - 1)
+        output += "          o_{}_re[{}]      = 1'b1;\n".format(i.name, j)
+        output += "        end\n"
       j += 1
       last_name = i.name
     output += "        default: o_resp.error = 1'b1;\n"
@@ -425,7 +437,7 @@ if __name__ == "__main__":
     return domainOff + addr_base
   
   def sourcecfgAddr(i, addr_base):
-    return sourcecfgOff + addr_base + i * 4
+    return sourcecfgOff + addr_base + (i-1) * 4
 
   def mmsiaddrcfgAddr(i, addr_base):
     return mmsiaddrcfgOff + addr_base
@@ -473,7 +485,7 @@ if __name__ == "__main__":
     return genmsiOff + addr_base
 
   def targetAddr(i, addr_base):
-    return targetOff + addr_base + i * 4
+    return targetOff + addr_base + (i-1) * 4
 
   def ideliveryAddr(i, addr_base):
     return ideliveryOff + addr_base + i * 0x20
@@ -500,16 +512,16 @@ if __name__ == "__main__":
 
     # iforce register
     #addrmap.addEntries(num_idcs, iforceAddr, aplic_idc_base, mode + "iforce", mode + "iforce", Access.RW, IFORCE_SIZE)
-    addrmap.addEntriesMacro(num_idcs, "NR_IDCs", REG_MACRO_ENTRY, iforceAddr, aplic_idc_base, mode + "iforce", mode + "iforce", Access.RW, IFORCE_SIZE)
+    addrmap.addEntriesMacro(num_idcs, "NR_IDCs", REG_MACRO_ENTRY, iforceAddr, aplic_idc_base, mode + "iforce", mode + "iforce", Access.RW, IFORCE_SIZE, 0)
 
     # ithreshold register
-    addrmap.addEntriesMacro(num_idcs, "NR_IDCs", REG_BIT_W_MACRO_ENTRY, ithresholdAddr, aplic_idc_base, mode + "ithreshold", mode + "ithreshold", Access.RW, "IPRIOLEN")
+    addrmap.addEntriesMacro(num_idcs, "NR_IDCs", REG_BIT_W_MACRO_ENTRY, ithresholdAddr, aplic_idc_base, mode + "ithreshold", mode + "ithreshold", Access.RW, "IPRIOLEN", 0)
 
     # topi register
-    addrmap.addEntriesMacro(num_idcs, "NR_IDCs", REG_MACRO_ENTRY, topiAddr, aplic_idc_base, mode + "topi", mode + "topi", Access.RO, TOPI_SIZE)
+    addrmap.addEntriesMacro(num_idcs, "NR_IDCs", REG_MACRO_ENTRY, topiAddr, aplic_idc_base, mode + "topi", mode + "topi", Access.RO, TOPI_SIZE, 0)
 
     # claimi register
-    addrmap.addEntriesMacro(num_idcs, "NR_IDCs", REG_MACRO_ENTRY, claimiAddr, aplic_idc_base, mode + "claimi", mode + "claimi", Access.RO, CLAIMI_SIZE)
+    addrmap.addEntriesMacro(num_idcs, "NR_IDCs", REG_MACRO_ENTRY, claimiAddr, aplic_idc_base, mode + "claimi", mode + "claimi", Access.RO, CLAIMI_SIZE, 0)
     return 0
 
   def addDomain(domain_mode, exist_s_mode, nr_idc, aplic_base):
@@ -522,7 +534,7 @@ if __name__ == "__main__":
     addrmap.addEntry(domainAddr, aplic_base, mode + "domaincfg", mode + "domaincfg", Access.RW, REGISTER_DEF_SIZE32)
 
     # sourcecfg registers
-    addrmap.addEntriesMacro(nr_src_eff, "NR_SRC", REG_MACRO_ENTRY, sourcecfgAddr, aplic_base, mode + "sourcecfg", mode + "sourcecfg", Access.RW, SOURCECFG_SIZE)
+    addrmap.addEntriesMacro(nr_src_eff, "NR_SRC", SRC_DEPEND_ENTRY, sourcecfgAddr, aplic_base, mode + "sourcecfg", mode + "sourcecfg", Access.RW, SOURCECFG_SIZE, 1)
     
     # Only implemented at M-Mode
     if(domain_mode == MMODE):
@@ -551,7 +563,7 @@ if __name__ == "__main__":
     #   addrmap.addEntry(setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, REGISTER_DEF_SIZE32)
     # elif nr_setip >= 1:
     #   addrmap.addEntries(nr_setip+1, setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, REGISTER_DEF_SIZE32)
-    addrmap.addEntriesMacro(nr_setip+1, "NR_REG", SOURCES_ENTRY, setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, REGISTER_DEF_SIZE32)
+    addrmap.addEntriesMacro(nr_setip+1, "NR_REG", REG_DEPEND_ENTRY, setipAddr, aplic_base, mode + "setip", mode + "setip", Access.RW, REGISTER_DEF_SIZE32, 0)
 
     # setipnum registers
     addrmap.addEntry(setipnumAddr, aplic_base, mode + "setipnum", mode + "setipnum", Access.WAR0, REGISTER_DEF_SIZE32)
@@ -566,7 +578,7 @@ if __name__ == "__main__":
     #   addrmap.addEntry(in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, REGISTER_DEF_SIZE32)
     # elif nr_in_clrip >= 1:
     #   addrmap.addEntries(nr_in_clrip+1, in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, REGISTER_DEF_SIZE32)
-    addrmap.addEntriesMacro(nr_in_clrip+1, "NR_REG", SOURCES_ENTRY, in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, REGISTER_DEF_SIZE32)
+    addrmap.addEntriesMacro(nr_in_clrip+1, "NR_REG", REG_DEPEND_ENTRY, in_clripAddr, aplic_base, mode + "in_clrip", mode + "in_clrip", Access.RW, REGISTER_DEF_SIZE32, 0)
 
     # clripnum registers
     addrmap.addEntry(clripnumAddr, aplic_base, mode + "clripnum", mode + "clripnum", Access.WAR0, REGISTER_DEF_SIZE32)
@@ -581,7 +593,7 @@ if __name__ == "__main__":
     #   addrmap.addEntry(setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, REGISTER_DEF_SIZE32)
     # elif nr_setie >= 1:
     #   addrmap.addEntries(nr_setie+1, setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, REGISTER_DEF_SIZE32)
-    addrmap.addEntriesMacro(nr_setie+1, "NR_REG", SOURCES_ENTRY , setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, REGISTER_DEF_SIZE32)
+    addrmap.addEntriesMacro(nr_setie+1, "NR_REG", REG_DEPEND_ENTRY , setieAddr, aplic_base, mode + "setie", mode + "setie", Access.RW, REGISTER_DEF_SIZE32, 0)
 
     # setienum registers
     addrmap.addEntry(setienumAddr, aplic_base, mode + "setienum", mode + "setienum", Access.WAR0, REGISTER_DEF_SIZE32)
@@ -596,7 +608,7 @@ if __name__ == "__main__":
     #   addrmap.addEntry(clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.WAR0, REGISTER_DEF_SIZE32)
     # elif nr_clrie >= 1:
     #   addrmap.addEntries(nr_clrie+1, clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.WAR0, REGISTER_DEF_SIZE32)
-    addrmap.addEntriesMacro(nr_clrie+1, "NR_REG", SOURCES_ENTRY, clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.WAR0, REGISTER_DEF_SIZE32)
+    addrmap.addEntriesMacro(nr_clrie+1, "NR_REG", REG_DEPEND_ENTRY, clrieAddr, aplic_base, mode + "clrie", mode + "clrie", Access.WAR0, REGISTER_DEF_SIZE32, 0)
 
     # clrienum registers
     addrmap.addEntry(clrienumAddr, aplic_base, mode + "clrienum", mode + "clrienum", Access.WAR0, REGISTER_DEF_SIZE32)
@@ -613,7 +625,7 @@ if __name__ == "__main__":
     addrmap.addEntry(genmsiAddr, aplic_base, mode + "genmsi", mode + "genmsi", Access.RW, REGISTER_DEF_SIZE32)
 
     # target registers
-    addrmap.addEntriesMacro(nr_src_eff, "NR_SRC", REG_MACRO_ENTRY, targetAddr, aplic_base, mode + "target", mode + "target", Access.RW, REGISTER_DEF_SIZE32)
+    addrmap.addEntriesMacro(nr_src_eff, "NR_SRC", SRC_DEPEND_ENTRY, targetAddr, aplic_base, mode + "target", mode + "target", Access.RW, REGISTER_DEF_SIZE32, 1)
     
     # IDCs
     addIDC(aplic_base + aplic_idc_base, nr_idc, mode)
@@ -646,7 +658,7 @@ if __name__ == "__main__":
 
   addDomain(domain_level, s_domain, nr_idc, addr)
   
-  regmap_name = "aplic_regmap"
+  regmap_name = "aplic_regmap_unstable"
   if(domain_level == MMODE):
     #regmap_name = "aplic_m_"+ domain_id + "regmap"
     file_top_name = "aplic_m_domain_"+ domain_id + "top"
@@ -654,5 +666,5 @@ if __name__ == "__main__":
     #regmap_name = "aplic_s_"+ domain_id + "regmap"
     file_top_name = "aplic_s_domain_"+ domain_id + "top"
 
-  print_domain_top(file_top_name)
+  #print_domain_top(file_top_name)
   print_regmap(regmap_name)
