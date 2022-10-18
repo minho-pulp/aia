@@ -1,0 +1,245 @@
+[*]
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Tue Oct 18 21:24:53 2022
+[*]
+[dumpfile] "/home/d3boker1/Uni22_23/Thesis/aia/aplic/test/DomainTop/dump.vcd"
+[dumpfile_mtime] "Tue Oct 18 21:22:54 2022"
+[dumpfile_size] 116599
+[savefile] "/home/d3boker1/Uni22_23/Thesis/aia/aplic/test/DomainTop/wave.gtkw"
+[timestart] 141290
+[size] 1920 1080
+[pos] -1 -1
+*-13.000000 145910 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.aplic_domain_top_wrapper.
+[treeopen] top.aplic_domain_top_wrapper.i_aplic_domain_top.
+[treeopen] top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.
+[sst_width] 344
+[signals_width] 413
+[sst_expanded] 1
+[sst_vpaned_height] 299
+@28
+[color] 3
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_clk
+[color] 3
+top.aplic_domain_top_wrapper.i_aplic_domain_top.ni_rst
+@22
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_req.addr[31:0]
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.i_req.wdata[31:0]
+@c00022
+[color] 1
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+@28
+(0)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(1)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(2)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(3)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(4)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(5)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(6)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(7)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(8)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(9)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(10)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(11)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(12)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(13)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(14)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(15)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(16)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(17)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(18)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(19)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(20)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(21)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(22)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(23)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(24)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(25)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(26)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(27)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(28)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(29)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(30)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+(31)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_irq_sources[31:0]
+@1401200
+-group_end
+@22
+[color] 1
+top.aplic_domain_top_wrapper.i_aplic_domain_top.o_irq_del_sources[31:0]
+@c00022
+[color] 1
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+@28
+[color] 1
+(0)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(1)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(2)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(3)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(4)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(5)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(6)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(7)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(8)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(9)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(10)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(11)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(12)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(13)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(14)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(15)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(16)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(17)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(18)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(19)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(20)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(21)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(22)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(23)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(24)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(25)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(26)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(27)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(28)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(29)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(30)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+[color] 1
+(31)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setip_qi(0)[31:0]
+@1401200
+-group_end
+@28
+[color] 2
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setienum_we
+@22
+[color] 2
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setienum_qi[31:0]
+@28
+[color] 2
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_select_i[2:0]
+@22
+[color] 2
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.sugg_setie_i(0)[31:0]
+@c00022
+[color] 2
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+@28
+(0)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(1)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(2)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(3)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(4)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(5)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(6)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(7)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(8)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(9)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(10)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(11)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(12)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(13)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(14)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(15)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(16)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(17)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(18)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(19)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(20)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(21)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(22)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(23)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(24)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(25)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(26)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(27)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(28)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(29)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(30)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+(31)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_di(0)[31:0]
+@1401200
+-group_end
+@22
+[color] 2
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.setie_qi(0)[31:0]
+@c00022
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+@28
+(0)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(1)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(2)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(3)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(4)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(5)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(6)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(7)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(8)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(9)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(10)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(11)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(12)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(13)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(14)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(15)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(16)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(17)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(18)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(19)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(20)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(21)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(22)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(23)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(24)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(25)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(26)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(27)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(28)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(29)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(30)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+(31)top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.active_i(0)[31:0]
+@1401200
+-group_end
+@28
+[color] 5
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.topi_update_i[0]
+@22
+[color] 5
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.topi_sugg_i(0)[25:0]
+[color] 5
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.topi_di(0)[25:0]
+@28
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.claimi_re[0]
+@22
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.claimed_forwarded_i(0)[31:0]
+[color] 5
+top.aplic_domain_top_wrapper.i_aplic_domain_top.i_aplic_domain_regctl.topi_qi(0)[25:0]
+[pattern_trace] 1
+[pattern_trace] 0

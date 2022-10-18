@@ -123,6 +123,11 @@ def axi_read_reg(dut, addr):
     outputs.reg_intf_resp_d32_rdata = dut.reg_intf_resp_d32_rdata.value
     return outputs.reg_intf_resp_d32_rdata 
     
+def axi_disable_read(dut):
+    input.reg_intf_req_a32_d32_valid = 0
+    input.reg_intf_req_a32_d32_write = 1
+    dut.reg_intf_req_a32_d32_valid.value = input.reg_intf_req_a32_d32_valid
+    dut.reg_intf_req_a32_d32_write.value = input.reg_intf_req_a32_d32_write
 
 async def debug_config(dut):
     # Disable domain
@@ -132,52 +137,84 @@ async def debug_config(dut):
     # Interrupts source configuration
     for i in range(NR_SRC):
         if i == 13:
-            axi_write_reg(dut, sourcecfgBase + (0x4 * i), EDGE1)
-            await Timer(randint(2,4), units="ns")
+            axi_write_reg(dut, sourcecfgBase + (0x4 * (i-1)), EDGE1)
         elif i == 17:
-            axi_write_reg(dut, sourcecfgBase + (0x4 * i), EDGE1)
-            await Timer(randint(2,4), units="ns")
+            axi_write_reg(dut, sourcecfgBase + (0x4 * (i-1)), EDGE1)
         elif i == 31:
-            axi_write_reg(dut, sourcecfgBase + (0x4 * i), EDGE1)
-            await Timer(randint(2,4), units="ns")
+            axi_write_reg(dut, sourcecfgBase + (0x4 * (i-1)), EDGE1)
         else:
-            axi_write_reg(dut, sourcecfgBase + (0x4 * i), DELEGATE_SRC)
-            await Timer(randint(2,4), units="ns")
+            axi_write_reg(dut, sourcecfgBase + (0x4 * (i-1)), DELEGATE_SRC)
+        await Timer(randint(3,4), units="ns")
+        
 
     # Interrupts 13, 17, 31 target configuration
-    axi_write_reg(dut, targetBase + (0x4 * 13), 2)
-    await Timer(randint(1,4), units="ns")
-    axi_write_reg(dut, targetBase + (0x4 * 17), 1)
-    await Timer(randint(1,4), units="ns")
-    axi_write_reg(dut, targetBase + (0x4 * 31), 3)
-    await Timer(randint(1,4), units="ns")
+    axi_write_reg(dut, targetBase + (0x4 * (13-1)), 3)
+    await Timer(randint(2,4), units="ns")
+    axi_write_reg(dut, targetBase + (0x4 * (17-1)), 1)
+    await Timer(randint(2,4), units="ns")
+    axi_write_reg(dut, targetBase + (0x4 * (31-1)), 2)
+    await Timer(randint(2,4), units="ns")
 
     # Interrupts 13, 31 enbaling
     axi_write_reg(dut, setienumBase, 13)
-    await Timer(randint(1,4), units="ns")
+    await Timer(randint(3,4), units="ns")
     axi_write_reg(dut, setienumBase, 31)
-    await Timer(randint(1,4), units="ns")
+    await Timer(randint(3,4), units="ns")
 
     # IDC configuration
     axi_write_reg(dut, ideliveryBase, 1)
-    await Timer(randint(1,4), units="ns")
+    await Timer(randint(3,4), units="ns")
     axi_write_reg(dut, ithresholdBase, 0)
-    await Timer(randint(1,4), units="ns")
+    await Timer(randint(3,4), units="ns")
 
     # Enable domain
     axi_write_reg(dut, domainBase, (1 << 8))
-    await Timer(randint(1,4), units="ns")
+    await Timer(randint(3,4), units="ns")
 
+    # Trigger interrupts
+    # First, trigger interrupt 13 
+    # (not delegated, enabled and prio = 3)
+    # Is expected that topi has 13 and 3
     await Timer(randint(2,7), units="ns")
-    input.i_irq_sources             = set_or_reg(input.i_irq_sources, 1, SRC_PER_BIT, intp.SRC[13])
+    input.i_irq_sources             = set_reg(input.i_irq_sources, 1, SRC_PER_BIT, intp.SRC[13])
+    dut.i_irq_sources.value         = input.i_irq_sources
+    # Whithout claming interrupt 13, we trigger interrupt 31 
+    # (not delegated, enbaled and prio = 2, higher)
+    # Is expected that topi has 31 and 2
+    await Timer(randint(2,7), units="ns")
+    input.i_irq_sources             = set_reg(input.i_irq_sources, 1, SRC_PER_BIT, intp.SRC[31])
+    dut.i_irq_sources.value         = input.i_irq_sources
+    # Whithout claming interrupt 31, we trigger interrupt 17 
+    # (not delegated, disabled and prio = 1, higher)
+    # Is expected that topi has 31 and 2
+    await Timer(randint(2,7), units="ns")
+    input.i_irq_sources             = set_reg(input.i_irq_sources, 1, SRC_PER_BIT, intp.SRC[17])
+    dut.i_irq_sources.value         = input.i_irq_sources
+    # Whithout claming interrupt 31, we trigger interrupt 21 
+    # (delegated, XXX and XXX)
+    # Is expected that topi has 31 and 2 AND irq_deleg has the 21 bit high
+    await Timer(randint(2,7), units="ns")
+    input.i_irq_sources             = set_reg(input.i_irq_sources, 1, SRC_PER_BIT, intp.SRC[21])
     dut.i_irq_sources.value         = input.i_irq_sources
 
+    # Claiming interrupt
+    # To claim an interrupt we just need to read from claimi reg
+    # Claim interrupt 31
+    await Timer(randint(2,7), units="ns")
+    axi_read_reg(dut, claimiBase)
+    # # Claim interrupt 13
+    await Timer(randint(2,7), units="ns")
+    axi_disable_read(dut)
+    await Timer(randint(2,7), units="ns")
+    axi_read_reg(dut, claimiBase)
+    await Timer(randint(2,7), units="ns")
+    axi_disable_read(dut)   
     ### EXPECTED VALUES ###
 
 async def generate_clock(dut):
     """Generate clock pulses."""
 
-    for cycle in range(100):
+    for cycle in range(500):
         dut.i_clk.value = 0
         await Timer(1, units="ns")
         dut.i_clk.value = 1

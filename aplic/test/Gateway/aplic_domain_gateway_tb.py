@@ -146,7 +146,7 @@ async def test_gatway_source1(dut):
     input.active                = set_or_reg(input.active, 1, SRC_PER_BIT, intp.SRC[1])
     dut.i_active.value          = input.active
 
-    await Timer(random.randint(2,7), units="ns")
+    await Timer(random.randint(3,7), units="ns")
     input.source                = set_or_reg(input.source, 1, SRC_PER_BIT, intp.SRC[1])
     dut.i_sources.value         = input.source
     
@@ -159,7 +159,7 @@ async def test_gatway_source1(dut):
     input.source                = set_reg(input.source, 0, SRC_PER_BIT, intp.SRC[1])
     dut.i_sources.value         = input.source
 
-    await Timer(random.randint(1,3), units="ns")
+    await Timer(random.randint(3,5), units="ns")
     input.claimed               = set_or_reg(input.claimed, 1, SRC_PER_BIT, intp.SRC[1])
     dut.i_claimed.value         = input.claimed
 
