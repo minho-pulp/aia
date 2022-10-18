@@ -160,7 +160,7 @@ module aplic_domain_regctl #(
   logic [NR_IDCs-1:0][25:0]           topi_qi, topi_di;
   logic [NR_IDCs-1:0]                 topi_re;
   // Register claimi
-  logic [NR_IDCs-1:0]                 claimi_re;
+  logic [NR_IDCs-1:0]                 claimi_re, claimi_re_prev;
 
   // ENDIANESS
   // // Register setipnum_le
@@ -468,8 +468,9 @@ module aplic_domain_regctl #(
 
 // ===================== CLAIMED FORWARDED ========================
   always_comb begin
+    claimed_forwarded_i = '0;
     for (int i = 0; i < NR_IDCs; i++) begin
-      if (claimi_re[i] == 1'b1) begin
+      if ((claimi_re[i] == 1'b1) && (claimi_re_prev[i] == 1'b0)) begin
         claimed_forwarded_i[topi_qi[i][16 +: NR_SRC_W]/32][topi_qi[i][16 +: NR_SRC_W]%32] = 1'b1;
       end 
     end
@@ -494,7 +495,7 @@ module aplic_domain_regctl #(
     for (int i = 0; i < NR_IDCs; i++) begin
       ithreshold_di[i]  = (ithreshold_we[i]) ? ithreshold_o[i] : ithreshold_qi[i];
       idelivery_di[i]   = (idelivery_we[i]) ? idelivery_o[i] : idelivery_qi[i];
-      topi_di[i]        = (topi_update_i[i]) ? topi_sugg_i[i] : topi_qi[i];
+      topi_di[i]        = ((topi_update_i[i]) || ((topi_sugg_i[i] == 0) && claimi_re[i])) ? topi_sugg_i[i] : topi_qi[i];
       case (iforce_select_i[i])
         ZERO_FORCE: iforce_di[i]  = '0;
         W_FORCE: iforce_di[i]     = iforce_o[i]; 
@@ -544,6 +545,7 @@ module aplic_domain_regctl #(
       clripnum_qi <= '0;
       setienum_qi <= '0;
       clrienum_qi <= '0;
+      claimi_re_prev <= '0;
       //  setipnum_le_qi <= '0;
       //  setipnum_be_qi <= '0;
       //  mmsiaddrcfg_qi <= '0;
@@ -574,6 +576,7 @@ module aplic_domain_regctl #(
         clripnum_qi <= clripnum_di;
         setienum_qi <= setienum_di;
         clrienum_qi <= clrienum_di;
+        claimi_re_prev <= claimi_re;
         //  setipnum_le_qi <= setipnum_le_di;
         //  setipnum_be_qi <= setipnum_be_di;
         //  mmsiaddrcfg_qi <= mmsiaddrcfg_di;
