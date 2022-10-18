@@ -377,7 +377,7 @@ module aplic_domain_regctl #(
   always_comb begin
     for (int i = 1; i < NR_SRC; i++) begin
       case (domaincfg_qi[2])
-        APLIC_DIRECT_MODE: target_aux_di[i] = {target_o[i][31:18], 10'b10, (target_o[i][7:0] == 0) ? 8'h1: target_o[i][7:0]};  
+        APLIC_DIRECT_MODE: target_aux_di[i] = {target_o[i][31:18], 10'b0, (target_o[i][7:0] == 0) ? 8'h1: target_o[i][7:0]};  
         APLIC_MSI_MODE: target_aux_di[i] = {target_o[i][31:12], 1'b0, target_o[i][10:0]};
         default: target_aux_di[i] = '0;
       endcase
