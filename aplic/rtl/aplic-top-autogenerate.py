@@ -25,19 +25,19 @@ class GenTop:
     output = "//\n"
     output += "module aplic_top #(\n"
     output += "   /** Number of external interrupts */\n"
-    output += "   parameter int                           N_SOURCE = {},\n" .format(nr_src)
+    output += "   parameter int                           NR_SRC = {},\n" .format(nr_src)
     output += "   /** There is one IDC per hart index connected to the APLIC */\n"
-    output += "   parameter int                           N_IDCs = {}\n" .format(nr_idc)
+    output += "   parameter int                           NR_IDCs = {}\n" .format(nr_idc)
     output += ") (\n"
     output += "   input  logic                            i_clk,\n"
     output += "   input  logic                            ni_rst,\n"
-    output += "   input  logic [N_SOURCE:0]               i_sources,\n"
+    output += "   input  logic [NR_SRC-1:0]               i_irq_sources,\n"
     for i in range(nr_domains):
         output += "   /** APLIC domain interface {}*/\n".format(i+1)
         output += "   input  reg_intf::reg_intf_req_a32_d32   i_req_{},\n".format(i+1)
         output += "   output reg_intf::reg_intf_resp_d32      o_resp_{},\n".format(i+1)
     output += "   /** Interrupt Notification to Targets. One per priv. level. */\n"
-    output += "   output logic [(N_IDCs*2)-1:0]           o_Xeip_targets\n"
+    output += "   output logic [(NR_IDCs*2)-1:0]           o_Xeip_targets\n"
     output += "); /** End of APLIC top interface */\n\n"
     output += "/** Insert Code Here */\n"
     output += "\n"
