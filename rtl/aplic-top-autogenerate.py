@@ -39,6 +39,7 @@ class GenTop:
     output += "   /** Interrupt Notification to Targets. One per priv. level. */\n"
     output += "   output logic [(NR_IDCs*2)-1:0]           o_Xeip_targets\n"
     output += "); /** End of APLIC top interface */\n\n"
+    output += "logic [{}:0][NR_SRC-1:0] irq_del_sources_i;\n".format(nr_domains-2)
     output += "/** Insert Code Here */\n"
     output += "\n"
     output += "endmodule\n"

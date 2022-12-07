@@ -100,6 +100,7 @@ for (genvar i = 1 ; i < NR_SRC; i++) begin
 end
 
 /** Choose logic to set pend */
+/** TODO: Needs refactoring */
 always_comb begin
    for(int j = 0; j <= NR_REG; j++) begin
         for (int i = (j == 0) ? 1 : 0; i < NR_BITS_SRC; i++) begin
